@@ -46,7 +46,7 @@
         <div>
             <input style="width: 300px;" placeholder="ex: 刻痕(-)、十字刻痕(+)">
         </div><br>
-        <h3>步驟二:選顏色</h3>
+        <h3>步驟二:選顏色(預設:白)</h3>
         <div>
             <input type="radio" name="white_drug" value="white" checked>白色<br>
             <input type="radio" name="white_drug" value="notwhite">下方選顏色<br>
@@ -75,6 +75,12 @@
             ctx.fillStyle=grd;
             // 執行填滿繪製 參數依序為 x、y、width(寬)、height(高)
             ctx.fillRect(0,0,280,30);
+
+            var slider = document.getElementById("saturation_bar");
+            var output = document.getElementById("demo");
+            slider.oninput = function() {
+                output.innerHTML = this.value;
+            }
         </script>
     </body>
 </html>
