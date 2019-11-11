@@ -10,6 +10,33 @@
                 font-family: 微軟正黑體;
                 text-align: center;
             }
+            .slider {
+                -webkit-appearance: none;
+                width: 300px;
+                height: 15px;
+                border-radius: 5px;  
+                background: #d3d3d3;
+                outline: none;
+                opacity: 0.7;
+                -webkit-transition: .2s;
+                transition: opacity .2s;
+            }
+            .slider::-webkit-slider-thumb {
+                -webkit-appearance: none;
+                appearance: none;
+                width: 25px;
+                height: 25px;
+                border-radius: 50%; 
+                background: #4CAF50;
+                cursor: pointer;
+            }
+            .slider::-moz-range-thumb {
+                width: 25px;
+                height: 25px;
+                border-radius: 50%;
+                background: #4CAF50;
+                cursor: pointer;
+            }
         </style>
     </head>
     <body>
@@ -19,6 +46,9 @@
         <div>
             <input style="width: 300px;" placeholder="ex: 刻痕(-)、十字刻痕(+)">
         </div>
-        
+        <h3>步驟二:選顏色</h3>
+        <div>
+            <input class="slider" type="range" min="1" max="360" value="1">
+        </div>
     </body>
 </html>
