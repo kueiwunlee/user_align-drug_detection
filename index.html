@@ -42,17 +42,19 @@
     <body>
         <h1>藥物辨識</h1>
         <h3>步驟一:輸入藥上的特徵</h3>
-        <h5>不分英數、大小寫、順序</h5>
+        <h5>不分英數、大小寫、順序、正反面、刻痕</h5>
         <div>
             <input style="width: 300px;" placeholder="ex: 刻痕(-)、十字刻痕(+)">
-        </div>
+        </div><br>
         <h3>步驟二:選顏色</h3>
         <div>
-            <canvas id="colorbar" width="280" height="30" style="border:1px solid #c3c3c3;"></canvas><br>
-            <input class="slider" type="range" min="1" max="360" value="1">
+            <input type="radio" name="white_drug" value="white" checked>白色<br>
+            <input type="radio" name="white_drug" value="notwhite">下方選顏色<br>
+            <canvas id="color_bar" width="280" height="30"></canvas><br>
+            <input id="saturation_bar" class="slider" type="range" min="1" max="360" value="1">
         </div>
         <script type="text/javascript">
-            var c=document.getElementById("colorbar");
+            var c=document.getElementById("color_bar");
             var ctx=c.getContext("2d");
             // 建立線型漸層物件 參數依序為 x0(x起始點)、y0(y起始點)、x1(x結束點)、y1(y結束點)
             var grd=ctx.createLinearGradient(0,0,280,30);
@@ -73,7 +75,6 @@
             ctx.fillStyle=grd;
             // 執行填滿繪製 參數依序為 x、y、width(寬)、height(高)
             ctx.fillRect(0,0,280,30);
-            
-            </script>
+        </script>
     </body>
 </html>
