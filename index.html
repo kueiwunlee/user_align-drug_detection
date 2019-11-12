@@ -122,12 +122,6 @@
 
         const video = document.querySelector('#streamvideo');
         function initCameraStream() {
-            // stop any active streams in the window
-            //if (window.stream) {
-            //    window.stream.getTracks().forEach(function (track) {
-            //        track.stop();
-            //    });
-            //}
             var constraints = {
                 audio: false,
                 video: {
@@ -154,6 +148,11 @@
         }
         function take_canvas() {
             video.style = "visibility:hidden;height:0px;width:0px;";
+            if (window.stream) {
+                window.stream.getTracks().forEach(function (track) {
+                    track.stop();
+                });
+            }
         }
 
         function search() {
