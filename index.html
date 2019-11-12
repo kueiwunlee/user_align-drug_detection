@@ -64,8 +64,18 @@
         <canvas id="color_bar" width="360" height="30"></canvas><br>
         <input id="saturation_bar" class="slider" type="range" min="1" max="360" value="50"
             onchange="document.getElementById('notwhite').checked=true;"><br>
-        <a id="degree"></a>
+        <a id="degree"></a><br>
+        <button>初步搜尋</button><br>
+        <ul id="show_pred" style="list-style:none;"></ul>
     </div>
+    <hr>
+    <h3>步驟三:標記藥品位置</h3>
+    <div>
+        <button onclick="initCameraStream();">開啟鏡頭</button><br>
+        <video id="streamvideo" class="videostream" autoplay playsinline></video><br>
+        <button>深度搜尋</button><br>
+    </div>
+    <hr>
     <script type="text/javascript">
         var c = document.getElementById("color_bar");
         var ctx = c.getContext("2d");
@@ -101,6 +111,53 @@
             g = ctx.getImageData(cs - 1, 0, cs, 1).data[1];
             b = ctx.getImageData(cs - 1, 0, cs, 1).data[2];
             color_picked.style.backgroundColor = "rgb(" + r + "," + g + "," + b + ")";
+        }
+
+        const video = document.querySelector('#streamvideo');
+        function initCameraStream() {
+            // stop any active streams in the window
+            //if (window.stream) {
+            //    window.stream.getTracks().forEach(function (track) {
+            //        track.stop();
+            //    });
+            //}
+            var constraints = {
+                audio: false,
+                video: {
+                    width: { min: 300, ideal: window.innerWidth, max: 500 },
+                    height: { min: 300, ideal: window.innerWidth, max: 500 },
+                    facingMode: 'environment'
+                }
+            };
+            navigator.mediaDevices.getUserMedia(constraints).
+                then(handleSuccess).catch(handleError);
+            function handleSuccess(stream) {
+                window.stream = stream; // make stream available to browser console
+                video.srcObject = stream;
+                if (constraints.video.facingMode) {
+                    return navigator.mediaDevices.enumerateDevices(); //enumerateDevices  getUserMedia
+                }
+            }
+            function handleError(error) {
+                console.log(error);
+                if (error === 'PermissionDeniedError') {
+                    alert("Permission denied. Please refresh and give permission.");
+                }
+            }
+        }
+
+        function search(){
+            var ul = document.getElementById("show_pred");
+            for (i = 0; i < rank.length; i++) {
+                if (document.getElementById("top" + i)) {
+                    var element = document.getElementById("top" + i);
+                    element.parentNode.removeChild(element);
+                }
+                var li = document.createElement("li");
+                li.setAttribute("id", "top" + i);
+                ul.appendChild(li);
+                document.getElementById("top" + i).innerHTML = "<img src='drug_pic64x64/" + class_name_dict[rank[i]] + "'>" + class_name_dict[rank[i]];
+            }
         }
     </script>
 </body>
