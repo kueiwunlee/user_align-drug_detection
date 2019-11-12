@@ -243,7 +243,7 @@
             //畫!
         };
     
-        canvas.addEventListener('ontouchstart', function(evt) {
+        canvas.addEventListener('mousedown', function(evt) {
             var mousePos = getMousePos(_canvas, evt);
             //從按下去就會執行第一次的座標取得
             evt.preventDefault();
@@ -251,14 +251,15 @@
             //建立path物件
             ctx.moveTo(mousePos.x, mousePos.y);  
             //每次的點用moveTo去區別開，如果用lineTo會連在一起  
-            canvas.addEventListener('ontouchmove', mouseMove, false);
+            canvas.addEventListener('mousemove', mouseMove, false);
             //mousemove的偵聽也在按下去的同時開啟
         });
     
-        canvas.addEventListener('ontouchhend', function() {
-            canvas.removeEventListener('ontouchmove', mouseMove, false);
+        canvas.addEventListener('mouseup', function() {
+            canvas.removeEventListener('mousemove', mouseMove, false);
         }, false);
         //如果滑鼠放開，將會停止mouseup的偵聽
+
     </script>
 </body>
 
