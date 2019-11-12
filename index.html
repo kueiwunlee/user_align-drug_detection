@@ -66,13 +66,18 @@
             onchange="document.getElementById('notwhite').checked=true;"><br>
         色相: <a id="degree">50</a><sup>o</sup><br>
         <button>初步搜尋</button><br>
-        <ul id="show_pred" style="list-style:none;"></ul>
     </div>
+    <hr>
+    <h5>初步搜尋結果:</h5>
+    <ul id="show_pred" style="list-style:none;">
+        <li id="top0">尚未搜尋</li>
+    </ul>
     <hr>
     <h3>步驟三:標記藥品位置</h3>
     <div>
         <button onclick="initCameraStream();">開啟鏡頭</button><br>
         <video id="streamvideo" class="videostream" autoplay playsinline></video><br>
+        <button onclick="take_canvas();">藥品置中照一張</button><br>
         <button>深度搜尋</button><br>
     </div>
     <hr>
@@ -145,8 +150,11 @@
                 }
             }
         }
+        function take_canvas() {
+            video.style = "visibility:hidden;height:0px;width:0px;";
+        }
 
-        function search(){
+        function search() {
             var ul = document.getElementById("show_pred");
             for (i = 0; i < rank.length; i++) {
                 if (document.getElementById("top" + i)) {
