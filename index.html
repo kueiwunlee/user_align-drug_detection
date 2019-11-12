@@ -80,9 +80,14 @@
         <button onclick="initCameraStream();">開啟鏡頭</button><br>
         <video id="streamvideo" class="videostream" autoplay playsinline></video><br>
         <button onclick="take_canvas();">藥品置中照一張</button><br>
+        <canvas></canvas><br>
         <button>深度搜尋</button><br>
     </div>
     <hr>
+    <h5>深度搜尋結果:</h5>
+    <ul id="show_pred_deep" style="list-style:none;">
+            <li id="deep_top0">尚未搜尋</li>
+    </ul>
     <script type="text/javascript">
         var c = document.getElementById("color_bar");
         var ctx = c.getContext("2d");
@@ -122,6 +127,7 @@
 
         const video = document.querySelector('#streamvideo');
         function initCameraStream() {
+            video.style = "";
             var constraints = {
                 audio: false,
                 video: {
