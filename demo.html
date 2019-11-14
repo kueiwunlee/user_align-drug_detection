@@ -1,4 +1,104 @@
-<script src="jquery.js"></script>
-<script type="text/javascript">
-    
-</script>
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title>藥物辨識</title>
+    <script src="jquery.js"></script>
+    <style>
+        h1,
+        h2,
+        h3,
+        h5,
+        h6,
+        div {
+            font-family: 微軟正黑體;
+            text-align: center;
+        }
+
+        .slider {
+            -webkit-appearance: none;
+            width: 380px;
+            height: 15px;
+            border-radius: 5px;
+            background: #d3d3d3;
+            outline: none;
+            opacity: 0.7;
+            -webkit-transition: .2s;
+            transition: opacity .2s;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: #4CAF50;
+            cursor: pointer;
+        }
+
+        .slider::-moz-range-thumb {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: #4CAF50;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>藥物辨識</h1>
+    <canvas id="demo_canvas"></canvas>
+    <script type="text/javascript">
+        const canvas = document.getElementById('demo_canvas');
+        canvas.ontouchstart = function (a) {
+            var x = a.touches[0].clientX;
+            var y = a.touches[0].clientY;
+            using = true;
+            if (eraserEnabled) {
+                context.clearRect(x, y, 20, 20);
+            }
+            else {
+                lastPoint = { x: x, y: y }
+            }
+        }
+        canvas.ontouchmove = function (a) {
+            var x = a.touches[0].clientX;
+            var y = a.touches[0].clientY;
+            if (!using) { return }
+            if (eraserEnabled) {
+                context.clearRect(x, y, 20, 20);
+            }
+            else {
+                var newPoint = { "x": x, "y": y };
+                drawLine(lastPoint.x, lastPoint.y, newPoint.x, newPoint.y)
+                lastPoint = newPoint;
+
+            }
+        }
+        canvas.ontouchhend = function (a) {
+            using = false;
+        }
+
+        function search() {
+            var ul = document.getElementById("show_pred");
+            for (i = 0; i < rank.length; i++) {
+                if (document.getElementById("top" + i)) {
+                    var element = document.getElementById("top" + i);
+                    element.parentNode.removeChild(element);
+                }
+                var li = document.createElement("li");
+                li.setAttribute("id", "top" + i);
+                ul.appendChild(li);
+                document.getElementById("top" + i).innerHTML = "<img src='drug_pic64x64/" + class_name_dict[rank[i]] + "'>" + class_name_dict[rank[i]];
+            }
+        }
+    </script>
+</body>
+
+</html>
