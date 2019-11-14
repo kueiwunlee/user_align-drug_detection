@@ -62,7 +62,6 @@
         canvas.ontouchstart = function (a) {
             var x = a.touches[0].clientX;
             var y = a.touches[0].clientY;
-            alert("x"+x+", y"+y);
             using = true;
             if (eraserEnabled) {
                 context.clearRect(x, y, 20, 20);
@@ -89,7 +88,6 @@
             using = false;
         }
         function drawLine(x1, y1, x2, y2) {
-            alert(x1, y1, x2, y2);
             context.beginPath();//開始移動筆觸，路徑開始
             context.moveTo(x1, y1);//其實座標
             context.lineWidth = lineWidth;//預設線條粗細
