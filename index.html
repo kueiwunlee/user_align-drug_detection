@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
         integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <title>藥物辨識</title>
     <script src="jquery.js"></script>
     <style>
@@ -81,7 +81,7 @@
         <button onclick="initCameraStream();">開啟鏡頭</button><br>
         <video id="streamvideo" class="videostream" autoplay playsinline></video><br>
         <button onclick="take_canvas();">藥品置中照一張</button><br>
-        <canvas></canvas><br>
+        <canvas id="demo_canvas"></canvas><br>
         <button>深度搜尋</button><br>
     </div>
     <hr>
@@ -153,6 +153,7 @@
                 }
             }
         }
+
         function take_canvas() {
             video.style = "visibility:hidden;height:0px;width:0px;";
             if (window.stream) {
@@ -160,6 +161,36 @@
                     track.stop();
                 });
             }
+        }
+
+        const canvas = document.querySelector('#demo_canvas');
+        canvas.ontouchstart = function (a) {
+            var x = a.touches[0].clientX;
+            var y = a.touches[0].clientY;
+            using = true;
+            if (eraserEnabled) {
+                context.clearRect(x, y, 20, 20);
+            }
+            else {
+                lastPoint = { x: x, y: y }
+            }
+        }
+        canvas.ontouchmove = function (a) {
+            var x = a.touches[0].clientX;
+            var y = a.touches[0].clientY;
+            if (!using) { return }
+            if (eraserEnabled) {
+                context.clearRect(x, y, 20, 20);
+            }
+            else {
+                var newPoint = { "x": x, "y": y };
+                drawLine(lastPoint.x, lastPoint.y, newPoint.x, newPoint.y)
+                lastPoint = newPoint;
+
+            }
+        }
+        canvas.ontouchhend = function (a) {
+            using = false;
         }
 
         function search() {
