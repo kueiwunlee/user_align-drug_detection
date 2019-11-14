@@ -55,8 +55,8 @@
     <h1>藥物辨識</h1>
     <canvas id="demo_canvas"></canvas>
     <script type="text/javascript">
-        alert("in");
         const canvas = document.getElementById('demo_canvas');
+        var using = false;
         canvas.ontouchstart = function (a) {
             alert("touched!!!!!");
             var x = a.touches[0].clientX;
