@@ -67,9 +67,6 @@
             return { x: x, y: y };
         }
         const canvas = document.getElementById('demo_canvas');
-        var canvas_y = getPosition(canvas);
-        alert(canvas_y.y);
-
         const context = canvas.getContext('2d');
         var using = false;
         var eraserEnabled = false;
@@ -93,7 +90,8 @@
             }
             else {
                 var newPoint = { "x": x, "y": y };
-                drawLine(lastPoint.x, lastPoint.y, newPoint.x, newPoint.y)
+                var canvas_y = parseInt(getPosition(canvas).y);
+                drawLine(lastPoint.x, canvas_y + parseInt(lastPoint.y), newPoint.x, canvas_y + parseInt(newPoint.y))
                 lastPoint = newPoint;
             }
         }
