@@ -88,13 +88,14 @@
             using = false;
         }
         function drawLine(x1, y1, x2, y2) {
-            alert("drawline");
+            alert(x1, y1, x2, y2);
             context.beginPath();//開始移動筆觸，路徑開始
             context.moveTo(x1, y1);//其實座標
             context.lineWidth = lineWidth;//預設線條粗細
             context.lineTo(x2, y2);//結束座標
             context.stroke();
             context.closePath();//結束筆觸，路徑結束
+            alert("drawlineover");
         }
         function search() {
             var ul = document.getElementById("show_pred");
