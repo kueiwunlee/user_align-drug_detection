@@ -155,13 +155,15 @@
         }
 
         function take_canvas() {
+            alert(video.width);
+            canvas.style = "";
             canvas.style = "width:" + video.width + "px;" + "height:" + video.width + "px;";
             // if (window.stream) {
             //     window.stream.getTracks().forEach(function (track) {
             //         track.stop();
             //     });
             // }
-            canvas.getContext('2d').drawImage(video, 0 , 0 , video.width, video.width, 0, 0, video.width, video.width);
+            canvas.getContext('2d').drawImage(video, 0, 0, video.width, video.width, 0, 0, video.width, video.width);
             // video.style = "visibility:hidden;height:0px;width:0px;";
         }
 
