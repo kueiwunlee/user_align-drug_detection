@@ -128,7 +128,6 @@
 
         const video = document.querySelector('#streamvideo');
         function initCameraStream() {
-            video.style = "";
             var constraints = {
                 audio: false,
                 video: {
@@ -155,6 +154,7 @@
         }
 
         function take_canvas() {
+            alert(video.width);
             canvas.style = "width:" + window.innerWidth + "px;" + "height:" + window.innerWidth + "px;";
             // if (window.stream) {
             //     window.stream.getTracks().forEach(function (track) {
