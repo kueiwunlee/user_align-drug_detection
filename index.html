@@ -154,15 +154,15 @@
         }
 
         function take_canvas() {
-            alert(video.width);
-            canvas.style = "width:" + window.innerWidth + "px;" + "height:" + window.innerWidth + "px;";
+            var w = video.videoWidth;
+            canvas.style = "width:" + w + "px;" + "height:" + w + "px;";
             // if (window.stream) {
             //     window.stream.getTracks().forEach(function (track) {
             //         track.stop();
             //     });
             // }
             canvas.getContext('2d').drawImage(video, 0, 0, window.innerWidth, window.innerWidth, 0, 0, window.innerWidth, window.innerWidth);
-            // video.style = "visibility:hidden;height:0px;width:0px;";
+            video.style = "visibility:hidden;height:0px;width:0px;";
         }
 
         function getPosition(element) {
