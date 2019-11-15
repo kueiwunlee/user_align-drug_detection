@@ -154,14 +154,27 @@
         }
 
         function take_canvas() {
-            var w = video.videoWidth;
-            canvas.style = "width:" + w + "px;" + "height:" + w + "px;";
             // if (window.stream) {
             //     window.stream.getTracks().forEach(function (track) {
             //         track.stop();
             //     });
             // }
-            canvas.getContext('2d').drawImage(video, 0, 0, w, w, 0, 0, w, w);
+            const canvas_temp = document.createElement('canvas');
+            canvas_temp.width = video.videoWidth;
+            canvas_temp.height = video.videoHeight;
+            var x = 0;
+            var y = 0;
+            var rectlen = canvas_temp.height;
+            if (canvas_temp.width > canvas_temp.height) {
+                rectlen = canvas_temp.height;
+                x = ((canvas_temp.width - canvas_temp.height) / 2).toFixed(0);
+            } else {
+                rectlen = canvas_temp.width;
+                y = ((canvas_temp.height - canvas_temp.width) / 2).toFixed(0);
+            }
+            canvas_temp.getContext('2d').drawImage(video, 0, 0, rectlen, rectlen);
+            canvas.style = "width:" + rectlen + "px;" + "height:" + rectlen + "px;";
+            canvas.getContext('2d').drawImage(canvas_temp, 0, 0, rectlen, rectlen);
             // video.style = "visibility:hidden;height:0px;width:0px;";
         }
 
