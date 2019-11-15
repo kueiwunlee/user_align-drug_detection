@@ -90,9 +90,6 @@
         <li id="deep_top0">尚未搜尋</li>
     </ul>
     <script type="text/javascript">
-        document.body.addEventListener('touchmove', function (e) {
-            e.preventDefault(); //阻止下拉滑動效果
-        }, { passive: false });
         var c = document.getElementById("color_bar");
         var ctx = c.getContext("2d");
         var color_bar_width = 360;
@@ -178,6 +175,9 @@
             return { x: x, y: y };
         }
         const canvas = document.getElementById('demo_canvas');
+        canvas.addEventListener('touchmove', function (e) {
+            e.preventDefault(); //阻止下拉滑動效果
+        }, { passive: false });
         const context = canvas.getContext('2d');
         var using = false;
         var eraserEnabled = false;
