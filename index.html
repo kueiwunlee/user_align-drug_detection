@@ -175,9 +175,9 @@
             return { x: x, y: y };
         }
         const canvas = document.getElementById('demo_canvas');
-        canvas.addEventListener('touchmove', function (e) {
-            e.preventDefault(); //阻止下拉滑動效果
-        }, { passive: false });
+        // canvas.addEventListener('touchmove', function (e) {
+        //     e.preventDefault(); //阻止下拉滑動效果
+        // }, { passive: false });
         const context = canvas.getContext('2d');
         var using = false;
         var eraserEnabled = false;
