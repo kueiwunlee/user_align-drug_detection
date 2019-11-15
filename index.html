@@ -155,7 +155,6 @@
 
         function take_canvas() {
             var w = video.videoWidth;
-            alert("w"+w+", h"+video.videoHeight);
             canvas.style = "width:" + w + "px;" + "height:" + w + "px;";
             // if (window.stream) {
             //     window.stream.getTracks().forEach(function (track) {
@@ -178,7 +177,7 @@
             return { x: x, y: y };
         }
         const canvas = document.getElementById('demo_canvas');
-        // canvas.style = "visibility:hidden;height:0px;width:0px;";
+        canvas.style = "height:300px;width:300px;";
         canvas.addEventListener('touchmove', function (e) {
             e.preventDefault(); //阻止下拉滑動效果
         }, { passive: false });
