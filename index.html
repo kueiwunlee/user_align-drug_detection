@@ -203,6 +203,7 @@
             else {
                 var newPoint = { "x": x, "y": y };
                 var canvas_y = parseInt(getPosition(canvas).y);
+                alert(canvas_y+"par"+lastPoint.y);
                 drawLine(lastPoint.x, canvas_y - parseInt(lastPoint.y), newPoint.x, canvas_y - parseInt(newPoint.y));
                 lastPoint = newPoint;
             }
