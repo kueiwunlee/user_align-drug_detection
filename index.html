@@ -126,13 +126,13 @@
             color_picked.style.backgroundColor = "rgb(" + r + "," + g + "," + b + ")";
         }
 
-        const video = document.querySelector('#streamvideo');
+        const video = document.getElementById("streamvideo");
         function initCameraStream() {
             var constraints = {
                 audio: false,
                 video: {
-                    width: 300,//{ min: 300, ideal: window.innerWidth, max: 500 },
-                    height: 300,//{ min: 300, ideal: window.innerWidth, max: 500 },
+                    width: { min: 300, ideal: window.innerWidth, max: 500 },
+                    height: { min: 300, ideal: window.innerWidth, max: 500 },
                     facingMode: 'environment'
                 }
             };
@@ -159,19 +159,13 @@
             //         track.stop();
             //     });
             // }
-            const canvas_temp = document.createElement('canvas');
-            canvas_temp.width = video.videoWidth;
-            canvas_temp.height = video.videoHeight;
-            var rectlen = canvas_temp.height;
-            if (canvas_temp.width > canvas_temp.height) {
-                rectlen = canvas_temp.height;
-            } else {
-                rectlen = canvas_temp.width;
-            }
-            canvas_temp.getContext('2d').drawImage(video, 0, 0, rectlen, rectlen);
-            canvas.style = "width:" + rectlen + "px;" + "height:" + rectlen + "px;";
-            canvas.getContext('2d').drawImage(canvas_temp, 0, 0, rectlen, rectlen);
-            // video.style = "visibility:hidden;height:0px;width:0px;";
+            var rectlen = video.videoWidth;
+            canvas_show.width = rectlen;
+            canvas_show.height = rectlen;
+            canvas_show.getContext('2d').drawImage(video, 0, 0, rectlen, rectlen);
+            alert("c" + canvas_show.width + ", v" + rectlen);
+            video.style = "visibility:hidden;height:0px;width:0px;";
+            canvas_show.style = "";
         }
 
         function getPosition(element) {
@@ -185,15 +179,15 @@
             }
             return { x: x, y: y };
         }
-        const canvas = document.getElementById('demo_canvas');
-        canvas.style = "visibility:hidden;height:0px;width:0px;";
-        canvas.addEventListener('touchmove', function (e) {
+        const canvas_show = document.getElementById('demo_canvas');
+        canvas_show.style = "visibility:hidden;height:0px;width:0px;";
+        canvas_show.addEventListener('touchmove', function (e) {
             e.preventDefault(); //阻止下拉滑動效果
         }, { passive: false });
-        const context = canvas.getContext('2d');
+        const context = canvas_show.getContext('2d');
         var using = false;
         var eraserEnabled = false;
-        canvas.ontouchstart = function (a) {
+        canvas_show.ontouchstart = function (a) {
             var x = a.touches[0].clientX;
             var y = a.touches[0].clientY;
             using = true;
@@ -204,7 +198,7 @@
                 lastPoint = { x: x, y: y }
             }
         }
-        canvas.ontouchmove = function (a) {
+        canvas_show.ontouchmove = function (a) {
             var x = a.touches[0].clientX;
             var y = a.touches[0].clientY;
             if (!using) { return }
@@ -220,7 +214,7 @@
                 lastPoint = newPoint;
             }
         }
-        canvas.ontouchhend = function (a) {
+        canvas_show.ontouchhend = function (a) {
             using = false;
         }
         function drawLine(x1, y1, x2, y2) {
