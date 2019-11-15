@@ -170,7 +170,7 @@
             // 搭配上面的示意圖可比較輕鬆理解為何要這麼計算
             while (element) {
                 x += element.offsetLeft - element.scrollLeft + element.clientLeft;
-                y += element.offsetTop - element.scrollLeft;
+                y += element.offsetTop - element.scrollLeft + element.clientTop;
                 element = element.offsetParent;
             }
             return { x: x, y: y };
@@ -182,9 +182,7 @@
         const context = canvas.getContext('2d');
         var using = false;
         var eraserEnabled = false;
-        var canvas_y = 0;
         canvas.ontouchstart = function (a) {
-            var canvas_y = parseInt(getPosition(canvas).y);
             var x = a.touches[0].clientX;
             var y = a.touches[0].clientY;
             using = true;
@@ -204,7 +202,7 @@
             }
             else {
                 var newPoint = { "x": x, "y": y };
-                // var canvas_y = parseInt(getPosition(canvas).y);
+                var canvas_y = parseInt(getPosition(canvas).y);
                 drawLine(lastPoint.x, parseInt(lastPoint.y) - canvas_y, newPoint.x, parseInt(newPoint.y) - canvas_y);
                 lastPoint = newPoint;
             }
