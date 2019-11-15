@@ -170,7 +170,7 @@
             // 搭配上面的示意圖可比較輕鬆理解為何要這麼計算
             while (element) {
                 x += element.offsetLeft - element.scrollLeft + element.clientLeft;
-                y += element.offsetTop - element.scrollTop;
+                y += element.offsetTop - element.scrollTop + element.clientTop;
                 element = element.offsetParent;
             }
             return { x: x, y: y };
@@ -203,7 +203,7 @@
             else {
                 var newPoint = { "x": x, "y": y };
                 var canvas_y = parseInt(getPosition(canvas).y);
-                drawLine(lastPoint.x, parseInt(lastPoint.y) - canvas_y, newPoint.x, parseInt(newPoint.y) - canvas_y);
+                drawLine(lastPoint.x, canvas_y + parseInt(lastPoint.y), newPoint.x, canvas_y + parseInt(newPoint.y));
                 lastPoint = newPoint;
             }
         }
