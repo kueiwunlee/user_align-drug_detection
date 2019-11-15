@@ -55,6 +55,9 @@
     <h1>藥物辨識</h1>
     <canvas id="demo_canvas"></canvas>
     <script type="text/javascript">
+        document.body.addEventListener('touchmove', function (e) {
+            e.preventDefault(); //阻止默认的处理方式(阻止下拉滑动的效果)
+        }, { passive: false });
         function getPosition(element) {
             var x = 0;
             var y = 0;
