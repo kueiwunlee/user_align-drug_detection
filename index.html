@@ -79,7 +79,8 @@
     <h3>步驟三:標記藥品位置</h3>
     <div>
         <button onclick="initCameraStream();">開啟鏡頭</button><br>
-        <video id="streamvideo" class="videostream" style="width: 300px;height: 300px;" autoplay playsinline></video><br>
+        <video id="streamvideo" class="videostream" style="width: 300px;height: 300px;" autoplay
+            playsinline></video><br>
         <button onclick="take_canvas();">藥品置中照一張</button><br>
         <canvas id="demo_canvas"></canvas><br>
         <button>深度搜尋</button><br>
@@ -153,13 +154,13 @@
             }
         }
 
-        function take_canvas() {
+        async function take_canvas() {
             // if (window.stream) {
             //     window.stream.getTracks().forEach(function (track) {
             //         track.stop();
             //     });
             // }
-            canvas.getContext('2d').drawImage(video, 0, 0, 300,300);
+            await canvas.getContext('2d').drawImage(video, 0, 0, 300, 300);
             // video.style = "visibility:hidden;height:0px;width:0px;";
         }
 
