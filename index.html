@@ -59,7 +59,6 @@
         <input style="width: 300px;" placeholder="ex: 刻痕(-)、十字刻痕(+)">
     </div><br>
     <h3>步驟二:選顏色(預設:白)</h3>
-    <canvas id="demo_canvas"></canvas><br>
     <div>
         <input type="radio" name="white_drug" value="white" checked>白色<br>
         <input id="notwhite" type="radio" name="white_drug">下方選顏色
@@ -82,7 +81,7 @@
         <button onclick="initCameraStream();">開啟鏡頭</button><br>
         <video id="streamvideo" class="videostream" autoplay playsinline></video><br>
         <button onclick="take_canvas();">藥品置中照一張</button><br>
-        <br>
+        <canvas id="demo_canvas"></canvas><br>
         <button>深度搜尋</button><br>
     </div>
     <hr>
@@ -156,12 +155,14 @@
         }
 
         function take_canvas() {
-            video.style = "visibility:hidden;height:0px;width:0px;";
+            canvas.style = "width:" + video.width + "px;" + "height:" + video.width + "px;";
             if (window.stream) {
                 window.stream.getTracks().forEach(function (track) {
                     track.stop();
                 });
             }
+            canvas.getContext('2d').drawImage(video, 0 , 0 , video.width, video.width, 0, 0, video.width, video.width);
+            video.style = "visibility:hidden;height:0px;width:0px;";
         }
 
         function getPosition(element) {
@@ -176,6 +177,7 @@
             return { x: x, y: y };
         }
         const canvas = document.getElementById('demo_canvas');
+        canvas.style = "visibility:hidden;height:0px;width:0px;";
         canvas.addEventListener('touchmove', function (e) {
             e.preventDefault(); //阻止下拉滑動效果
         }, { passive: false });
