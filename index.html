@@ -7,7 +7,6 @@
         integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <title>藥物辨識</title>
-    <canvas id="demo_canvas"></canvas><br>
     <script src="jquery.js"></script>
     <style>
         h1,
@@ -54,6 +53,7 @@
 
 <body>
     <h1>藥物辨識</h1>
+    <canvas id="demo_canvas"></canvas>
     <h3>步驟一:輸入藥上的特徵</h3>
     <h5>不分英數、大小寫、順序、正反面、刻痕</h5>
     <div>
@@ -176,9 +176,9 @@
             return { x: x, y: y };
         }
         const canvas = document.getElementById('demo_canvas');
-        // canvas.addEventListener('touchmove', function (e) {
-        //     e.preventDefault(); //阻止下拉滑動效果
-        // }, { passive: false });
+        canvas.addEventListener('touchmove', function (e) {
+            e.preventDefault(); //阻止下拉滑動效果
+        }, { passive: false });
         const context = canvas.getContext('2d');
         var using = false;
         var eraserEnabled = false;
