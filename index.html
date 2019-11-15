@@ -170,7 +170,7 @@
             // 搭配上面的示意圖可比較輕鬆理解為何要這麼計算
             while (element) {
                 x += element.offsetLeft - element.scrollLeft + element.clientLeft;
-                y += element.offsetTop  + element.clientTop;
+                y += element.offsetTop - element.scrollTop;
                 element = element.offsetParent;
             }
             return { x: x, y: y };
