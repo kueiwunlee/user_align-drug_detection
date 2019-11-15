@@ -154,14 +154,12 @@
         }
 
         function take_canvas() {
-            var w = video.videoWidth;
-            canvas.style = "width:" + w + "px;" + "height:" + w + "px;";
             // if (window.stream) {
             //     window.stream.getTracks().forEach(function (track) {
             //         track.stop();
             //     });
             // }
-            canvas.getContext('2d').drawImage(video, 0, 0, w, w, 0, 0, w, w);
+            canvas.getContext('2d').drawImage(video, 0, 0, 300,300);
             // video.style = "visibility:hidden;height:0px;width:0px;";
         }
 
