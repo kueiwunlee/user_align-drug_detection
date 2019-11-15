@@ -55,8 +55,9 @@
     <h1>藥物辨識</h1>
     <canvas id="demo_canvas"></canvas>
     <script type="text/javascript">
+        alert("2");
         document.body.addEventListener('touchmove', function (e) {
-            e.preventDefault(); //阻止默认的处理方式(阻止下拉滑动的效果)
+            e.preventDefault(); //阻止下拉滑動效果
         }, { passive: false });
         function getPosition(element) {
             var x = 0;
@@ -85,7 +86,6 @@
             }
         }
         canvas.ontouchmove = function (a) {
-            disableScroll();
             var x = a.touches[0].clientX;
             var y = a.touches[0].clientY;
             if (!using) { return }
@@ -97,7 +97,6 @@
                 var canvas_y = parseInt(getPosition(canvas).y);
                 drawLine(lastPoint.x, parseInt(lastPoint.y) - canvas_y, newPoint.x, parseInt(newPoint.y) - canvas_y);
                 lastPoint = newPoint;
-                enableScroll();
             }
         }
         canvas.ontouchhend = function (a) {
