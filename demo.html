@@ -55,7 +55,7 @@
     <h1>藥物辨識</h1>
     <canvas id="demo_canvas"></canvas>
     <script type="text/javascript">
-        alert("2");
+        alert("3");
         document.body.addEventListener('touchmove', function (e) {
             e.preventDefault(); //阻止下拉滑動效果
         }, { passive: false });
@@ -105,48 +105,10 @@
         function drawLine(x1, y1, x2, y2) {
             context.beginPath();//開始移動筆觸，路徑開始
             context.moveTo(x1, y1);//其實座標
-            // context.lineWidth = lineWidth;//預設線條粗細
+            context.lineWidth = 10;//預設線條粗細
             context.lineTo(x2, y2);//結束座標
             context.stroke();
             context.closePath();//結束筆觸，路徑結束
-        }
-
-        // left: 37, up: 38, right: 39, down: 40,
-        // spacebar: 32, pageup: 33, pagedown: 34, end: 35, home: 36
-        var keys = { 37: 1, 38: 1, 39: 1, 40: 1 };
-
-        function preventDefault(e) {
-            e = e || window.event;
-            if (e.preventDefault)
-                e.preventDefault();
-            e.returnValue = false;
-        }
-
-        function preventDefaultForScrollKeys(e) {
-            if (keys[e.keyCode]) {
-                preventDefault(e);
-                return false;
-            }
-        }
-
-        function disableScroll() {
-            if (window.addEventListener) // older FF
-                window.addEventListener('DOMMouseScroll', preventDefault, false);
-            document.addEventListener('wheel', preventDefault, { passive: false }); // Disable scrolling in Chrome
-            window.onwheel = preventDefault; // modern standard
-            window.onmousewheel = document.onmousewheel = preventDefault; // older browsers, IE
-            window.ontouchmove = preventDefault; // mobile
-            document.onkeydown = preventDefaultForScrollKeys;
-        }
-
-        function enableScroll() {
-            if (window.removeEventListener)
-                window.removeEventListener('DOMMouseScroll', preventDefault, false);
-            document.removeEventListener('wheel', preventDefault, { passive: false }); // Enable scrolling in Chrome
-            window.onmousewheel = document.onmousewheel = null;
-            window.onwheel = null;
-            window.ontouchmove = null;
-            document.onkeydown = null;
         }
 
         function search() {
