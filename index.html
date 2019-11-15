@@ -170,7 +170,7 @@
             // 搭配上面的示意圖可比較輕鬆理解為何要這麼計算
             while (element) {
                 x += element.offsetLeft - element.scrollLeft + element.clientLeft;
-                y += element.offsetTop - element.scrollTop || window.pageYOfset ||document.body.scrollTop + element.clientTop;
+                y += element.offsetTop - element.scrollTop + element.clientTop;
                 element = element.offsetParent;
             }
             return { x: x, y: y };
@@ -203,8 +203,9 @@
             else {
                 var newPoint = { "x": x, "y": y };
                 var canvas_y = parseInt(getPosition(canvas).y);
-                alert("last_y" + lastPoint.y + ", canvas_y" + canvas_y);
-                drawLine(lastPoint.x, parseInt(lastPoint.y) - canvas_y, newPoint.x, parseInt(newPoint.y) - canvas_y);
+                var scrollTop = document.documentElement.scrollTop || window.pageYOffset || document.body.scrollTop;
+                alert("last_y" + lastPoint.y + ", canvas_y" + canvas_y + ", scroll" + scrollTop);
+                drawLine(lastPoint.x, parseInt(lastPoint.y) - canvas_y + scrollTop, newPoint.x, parseInt(newPoint.y) - canvas_y + scrollTop);
                 lastPoint = newPoint;
             }
         }
