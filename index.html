@@ -204,7 +204,7 @@
                 var newPoint = { "x": x, "y": y };
                 var canvas_y = parseInt(getPosition(canvas).y);
                 var scrollTop = document.documentElement.scrollTop || window.pageYOffset || document.body.scrollTop;
-                alert("last_y" + lastPoint.y + ", canvas_y" + canvas_y + ", scroll" + scrollTop);
+                // alert("last_y" + lastPoint.y + ", canvas_y" + canvas_y + ", scroll" + scrollTop);
                 drawLine(lastPoint.x, parseInt(lastPoint.y) - canvas_y + scrollTop, newPoint.x, parseInt(newPoint.y) - canvas_y + scrollTop);
                 lastPoint = newPoint;
             }
