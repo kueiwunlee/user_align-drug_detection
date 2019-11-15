@@ -177,7 +177,7 @@
             return { x: x, y: y };
         }
         const canvas = document.getElementById('demo_canvas');
-        canvas.style = "visibility:hidden;height:0px;width:0px;";
+        // canvas.style = "visibility:hidden;height:0px;width:0px;";
         canvas.addEventListener('touchmove', function (e) {
             e.preventDefault(); //阻止下拉滑動效果
         }, { passive: false });
