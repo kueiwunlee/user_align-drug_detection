@@ -7,6 +7,7 @@
         integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <title>藥物辨識</title>
+    <canvas id="demo_canvas"></canvas><br>
     <script src="jquery.js"></script>
     <style>
         h1,
@@ -81,7 +82,7 @@
         <button onclick="initCameraStream();">開啟鏡頭</button><br>
         <video id="streamvideo" class="videostream" autoplay playsinline></video><br>
         <button onclick="take_canvas();">藥品置中照一張</button><br>
-        <canvas id="demo_canvas"></canvas><br>
+        <br>
         <button>深度搜尋</button><br>
     </div>
     <hr>
@@ -202,7 +203,6 @@
             else {
                 var newPoint = { "x": x, "y": y };
                 var canvas_y = parseInt(getPosition(canvas).y);
-                alert("x" + lastPoint.x + ", y" + lastPoint.y);
                 drawLine(lastPoint.x, parseInt(lastPoint.y) - canvas_y, newPoint.x, parseInt(newPoint.y) - canvas_y);
                 lastPoint = newPoint;
             }
