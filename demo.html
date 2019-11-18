@@ -13,8 +13,7 @@
         h2,
         h3,
         h5,
-        h6,
-        div {
+        h6 {
             font-family: 微軟正黑體;
             text-align: center;
         }
@@ -58,24 +57,26 @@
     <div>
         <input style="width: 300px;" placeholder="ex: 刻痕(-)、十字刻痕(+)">
     </div><br>
-    <h3>步驟二:放大藥品位置</h3>
+    <h3>步驟二:綠框對齊5cm*5cm</h3>
     <div>
         <button onclick="initCameraStream();">開啟鏡頭</button><br>
         <div id="videodiv" style="position: relative;">
             <video id="streamvideo" autoplay playsinline
                 style="transform: rotate(0deg); width: 100%; height: 100%; position: relative"></video>
             <div
-                style="width: 100px; height: 30px; color: white; position: absolute; top: 0px; left: 0px; background: green;">
-                test</div>
+                style="width: 300px; height: 300px; border-color:rgb(0,255,0); border-style: solid; position: absolute; top: 50px; left: 50px; background: rgba(0,0,0,0);">
+            </div>
         </div>
         <button onclick="take_canvas();">藥品置中照一張</button><br>
+        <canvas id="origin_canvas" style="width: 0px; height: 0px;"></canvas>
         <canvas id="demo_canvas"></canvas><br>
         <h5>將綠色框框貼近藥品邊緣</h5>
-        左<input id="horizontal_slider" class="slider" type="range" min="1" max="100" value="50">右<br><br>
-        上<input id="vertial_slider" class="slider" type="range" min="1" max="100" value="50">下<br><br>
-        大<input id="size_slider" class="slider" type="range" min="1" max="100" value="50">小<br><br>
+        左<input id="horizontal_slider" class="slider" type="range" min="1" max="400" value="200">右<br><br>
+        上<input id="vertial_slider" class="slider" type="range" min="1" max="400" value="200">下<br><br>
+        大<input id="size_slider" class="slider" type="range" min="1" max="300" value="150">小<br><br>
         <button>放大綠色區塊</button><br><br>
         <h3>步驟三:填滿藥品區域</h3>
+        <canvas id="fill_drug_canvas" style="width: 400px; height: 400px;"></canvas><br>
         大<input id="pen_size_slider" class="slider" type="range" min="1" max="100" value="50">小<br><br>
         <button>搜尋</button><br>
     </div>
@@ -85,18 +86,6 @@
         <li id="top0">尚未搜尋</li>
     </ul>
     <script type="text/javascript">
-        // var slider = document.getElementById("saturation_bar");
-        // var output = document.getElementById("degree");
-        // var color_picked = document.getElementById("color_pick");
-        // slider.oninput = function () {
-        //     output.innerHTML = this.value;
-        //     cs = this.value;
-        //     r = ctx.getImageData(cs - 1, 0, cs, 1).data[0];
-        //     g = ctx.getImageData(cs - 1, 0, cs, 1).data[1];
-        //     b = ctx.getImageData(cs - 1, 0, cs, 1).data[2];
-        //     color_picked.style.backgroundColor = "rgb(" + r + "," + g + "," + b + ")";
-        // }
-
         const video = document.getElementById("streamvideo");
         video.style = "visibility:hidden;height:0px;width:0px;";
         const videodiv = document.getElementById("videodiv");
@@ -106,8 +95,8 @@
             var constraints = {
                 audio: false,
                 video: {
-                    width: { min: 300, ideal: window.innerWidth, max: 500 },
-                    height: { min: 300, ideal: window.innerWidth, max: 500 },
+                    width: 400,//{ min: 300, ideal: window.innerWidth, max: 500 },
+                    height: 400,//{ min: 300, ideal: window.innerWidth, max: 500 },
                     facingMode: 'environment'
                 }
             };
@@ -126,6 +115,7 @@
                     alert("Permission denied. Please refresh and give permission.");
                 }
             }
+            videodiv.style = "position: relative;";
         }
 
         function take_canvas() {
@@ -135,12 +125,54 @@
             //     });
             // }
             var rectlen = video.videoWidth;
+
+            origin_canvas.width = rectlen;
+            origin_canvas.height = rectlen;
+            origin_canvas.getContext('2d').drawImage(video, 50, 50, 300, 300, 0, 0, 400, 400);
             canvas_show.width = rectlen;
             canvas_show.height = rectlen;
-            canvas_show.getContext('2d').drawImage(video, 0, 0, rectlen, rectlen);
+            canvas_show.getContext('2d').drawImage(origin_canvas, 0, 0, 400, 400);
             video.style = "visibility:hidden;height:0px;width:0px;";
             canvas_show.style = "";
+            videodiv.style = "visibility:hidden;height:0px;width:0px;";
         }
+
+        const horizontal_slider = document.getElementById("horizontal_slider");
+        const vertial_slider = document.getElementById("vertial_slider");
+        const size_slider = document.getElementById("size_slider");
+        const fill_drug_canvas = document.getElementById("fill_drug_canvas");
+        horizontal_slider.oninput = function () {
+            var h = parseInt(this.value);
+            var v = parseInt(vertial_slider.value);
+            var s = 300 - parseInt(size_slider.value);
+            draw_greenbox(h, s, v);
+        }
+        vertial_slider.oninput = function () {
+            var h = parseInt(horizontal_slider.value);
+            var v = parseInt(this.value);
+            var s = 300 - parseInt(size_slider.value);
+            draw_greenbox(h, s, v);
+        }
+        size_slider.oninput = function () {
+            var h = parseInt(horizontal_slider.value);
+            var v = parseInt(vertial_slider.value);
+            var s = 300 - parseInt(this.value);
+            draw_greenbox(h, s, v);
+        }
+        function draw_greenbox(h, s, v) {
+            const show_ctx = canvas_show.getContext('2d');
+            show_ctx.drawImage(origin_canvas, 0, 0, 400, 400);
+            show_ctx.beginPath();
+            show_ctx.rect(h - s / 2, v - s / 2, s, s);
+            show_ctx.strokeStyle = "rgb(0,255,0)";
+            show_ctx.lineWidth = 3;
+            show_ctx.stroke();
+            fill_drug_canvas.width = 400;
+            fill_drug_canvas.height = 400;
+            fill_drug_canvas.getContext('2d').drawImage(origin_canvas, h - s / 2, v - s / 2, s, s, 0, 0, 400, 400);
+        }
+
+
 
         function getPosition(element) {
             var x = 0;
@@ -154,6 +186,7 @@
             return { x: x, y: y };
         }
         const canvas_show = document.getElementById('demo_canvas');
+        const origin_canvas = document.getElementById("origin_canvas");
         // canvas_show.style = "visibility:hidden;height:0px;width:0px;";
         canvas_show.addEventListener('touchmove', function (e) {
             e.preventDefault(); //阻止下拉滑動效果
