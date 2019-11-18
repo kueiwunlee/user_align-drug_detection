@@ -53,28 +53,115 @@
 
 <body>
     <h1>藥物辨識</h1>
-    <canvas id="demo_canvas"></canvas>
+    <h3>步驟一:輸入藥上的特徵</h3>
+    <h5>不分英數、大小寫、順序、正反面、刻痕</h5>
+    <div>
+        <input style="width: 300px;" placeholder="ex: 刻痕(-)、十字刻痕(+)">
+    </div><br>
+    <h3>步驟二:放大藥品位置</h3>
+    <div>
+        <button onclick="initCameraStream();">開啟鏡頭</button><br>
+        <div id="videodiv" style="position: relative;">
+            <video id="streamvideo" autoplay playsinline
+                style="transform: rotate(0deg); width: 100%; height: 100%; position: relative"></video>
+            <div
+                style="width: 100px; height: 30px; color: white; position: absolute; top: 0px; left: 0px; background: green;">
+                test</div>
+        </div>
+        <button onclick="take_canvas();">藥品置中照一張</button><br>
+        <canvas id="demo_canvas"></canvas><br>
+        <h5>將綠色框框貼近藥品邊緣</h5>
+        左<input id="horizontal_slider" class="slider" type="range" min="1" max="100" value="50">右<br><br>
+        上<input id="vertial_slider" class="slider" type="range" min="1" max="100" value="50">下<br><br>
+        大<input id="size_slider" class="slider" type="range" min="1" max="100" value="50">小<br><br>
+        <button>放大綠色區塊</button><br><br>
+        <h3>步驟三:填滿藥品區域</h3>
+        大<input id="pen_size_slider" class="slider" type="range" min="1" max="100" value="50">小<br><br>
+        <button>搜尋</button><br>
+    </div>
+    <hr>
+    <h5>搜尋結果:</h5>
+    <ul id="show_pred" style="list-style:none;">
+        <li id="top0">尚未搜尋</li>
+    </ul>
     <script type="text/javascript">
-        alert("demo");
-        document.body.addEventListener('touchmove', function (e) {
-            e.preventDefault(); //阻止下拉滑動效果
-        }, { passive: false });
+        // var slider = document.getElementById("saturation_bar");
+        // var output = document.getElementById("degree");
+        // var color_picked = document.getElementById("color_pick");
+        // slider.oninput = function () {
+        //     output.innerHTML = this.value;
+        //     cs = this.value;
+        //     r = ctx.getImageData(cs - 1, 0, cs, 1).data[0];
+        //     g = ctx.getImageData(cs - 1, 0, cs, 1).data[1];
+        //     b = ctx.getImageData(cs - 1, 0, cs, 1).data[2];
+        //     color_picked.style.backgroundColor = "rgb(" + r + "," + g + "," + b + ")";
+        // }
+
+        const video = document.getElementById("streamvideo");
+        video.style = "visibility:hidden;height:0px;width:0px;";
+        const videodiv = document.getElementById("videodiv");
+        videodiv.style = "visibility:hidden;height:0px;width:0px;";
+        function initCameraStream() {
+            video.style = "";
+            var constraints = {
+                audio: false,
+                video: {
+                    width: { min: 300, ideal: window.innerWidth, max: 500 },
+                    height: { min: 300, ideal: window.innerWidth, max: 500 },
+                    facingMode: 'environment'
+                }
+            };
+            navigator.mediaDevices.getUserMedia(constraints).
+                then(handleSuccess).catch(handleError);
+            function handleSuccess(stream) {
+                window.stream = stream; // make stream available to browser console
+                video.srcObject = stream;
+                if (constraints.video.facingMode) {
+                    return navigator.mediaDevices.enumerateDevices(); //enumerateDevices  getUserMedia
+                }
+            }
+            function handleError(error) {
+                console.log(error);
+                if (error === 'PermissionDeniedError') {
+                    alert("Permission denied. Please refresh and give permission.");
+                }
+            }
+        }
+
+        function take_canvas() {
+            // if (window.stream) {
+            //     window.stream.getTracks().forEach(function (track) {
+            //         track.stop();
+            //     });
+            // }
+            var rectlen = video.videoWidth;
+            canvas_show.width = rectlen;
+            canvas_show.height = rectlen;
+            canvas_show.getContext('2d').drawImage(video, 0, 0, rectlen, rectlen);
+            video.style = "visibility:hidden;height:0px;width:0px;";
+            canvas_show.style = "";
+        }
+
         function getPosition(element) {
             var x = 0;
             var y = 0;
             // 搭配上面的示意圖可比較輕鬆理解為何要這麼計算
             while (element) {
                 x += element.offsetLeft - element.scrollLeft + element.clientLeft;
-                y += element.offsetTop - element.scrollLeft + element.clientTop;
+                y += element.offsetTop - element.scrollTop + element.clientTop;
                 element = element.offsetParent;
             }
             return { x: x, y: y };
         }
-        const canvas = document.getElementById('demo_canvas');
-        const context = canvas.getContext('2d');
+        const canvas_show = document.getElementById('demo_canvas');
+        // canvas_show.style = "visibility:hidden;height:0px;width:0px;";
+        canvas_show.addEventListener('touchmove', function (e) {
+            e.preventDefault(); //阻止下拉滑動效果
+        }, { passive: false });
+        const context = canvas_show.getContext('2d');
         var using = false;
         var eraserEnabled = false;
-        canvas.ontouchstart = function (a) {
+        canvas_show.ontouchstart = function (a) {
             var x = a.touches[0].clientX;
             var y = a.touches[0].clientY;
             using = true;
@@ -85,7 +172,7 @@
                 lastPoint = { x: x, y: y }
             }
         }
-        canvas.ontouchmove = function (a) {
+        canvas_show.ontouchmove = function (a) {
             var x = a.touches[0].clientX;
             var y = a.touches[0].clientY;
             if (!using) { return }
@@ -94,20 +181,23 @@
             }
             else {
                 var newPoint = { "x": x, "y": y };
-                var canvas_y = parseInt(getPosition(canvas).y);
-                drawLine(lastPoint.x, parseInt(lastPoint.y) - canvas_y, newPoint.x, parseInt(newPoint.y) - canvas_y);
+                var canvas_y = parseInt(getPosition(canvas_show).y);
+                var scrollTop = document.documentElement.scrollTop || window.pageYOffset || document.body.scrollTop;
+                // alert("last_y" + lastPoint.y + ", canvas_y" + canvas_y + ", scroll" + scrollTop);
+                drawLine(lastPoint.x, parseInt(lastPoint.y) - canvas_y + scrollTop, newPoint.x, parseInt(newPoint.y) - canvas_y + scrollTop);
                 lastPoint = newPoint;
             }
         }
-        canvas.ontouchhend = function (a) {
+        canvas_show.ontouchhend = function (a) {
             using = false;
         }
         function drawLine(x1, y1, x2, y2) {
             context.beginPath();//開始移動筆觸，路徑開始
-            context.moveTo(x1, y1);//其實座標
+            // context.moveTo(x1, y1);//其實座標
+            // context.lineTo(x2, y2);//結束座標
             context.lineWidth = 10;//預設線條粗細
-            context.lineTo(x2, y2);//結束座標
-            context.stroke();
+            context.arc(x1, y1, 30, 0, 2 * Math.PI, false);
+            context.fill();
             context.closePath();//結束筆觸，路徑結束
         }
 
