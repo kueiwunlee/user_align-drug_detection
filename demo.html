@@ -84,7 +84,7 @@
         <h3>步驟三:畫滿藥品區域</h3>
         <canvas id="fill_drug_canvas" style="width: 400px; height: 400px;"></canvas><br>
         畫筆大小:<canvas id="pensize" style="width: 60px; height: 60px;"></canvas><br>
-        大<input id="pen_size_slider" class="slider" type="range" min="1" max="60" value="30">小<br><br>
+        大<input id="pen_size_slider" class="slider" type="range" min="1" max="30" value="0">小<br><br>
         <button>搜尋</button><br>
     </div>
     <hr>
@@ -249,14 +249,18 @@
 
         const pen_size_slider = document.getElementById("pen_size_slider");
         const pensize_canvas = document.getElementById("pensize");
+        pensize_canvas.width = 60;
+        pensize_canvas.height = 60;
         var pen_R = 30;
         pen_size_slider.oninput = function () {
-            pen_R = parseInt(this.value);
-            var ctx=pensize_canvas.getContext('2d');
+            pen_R = 30 - parseInt(this.value);
+            var ctx = pensize_canvas.getContext('2d');
+            ctx.fillStyle = "white";
+            ctx.fillRect(0, 0, 60, 60);
             ctx.beginPath();
-            ctx.arc(30,30,pen_R, 0, 2 * Math.PI);
-            
-            ctx.fillstroke();
+            ctx.arc(30, 30, pen_R, 0, 2 * Math.PI);
+            ctx.fillStyle="black";
+            ctx.fill();
         }
 
         function search() {
