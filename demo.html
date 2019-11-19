@@ -87,6 +87,7 @@
         <button onclick="redraw();">重畫</button><br>
         大<input id="pen_size_slider" class="slider" type="range" min="1" max="30" value="15">小<br><br>
         <button onclick="search();">搜尋</button><br>
+        <canvas id="get_rgb_canvas"></canvas><br>
     </div>
     <hr>
     <div id="drug_data"></div>
@@ -280,10 +281,17 @@
         }
 
         function search() {
+            var h = parseInt(horizontal_slider.value);
+            var v = parseInt(vertial_slider.value);
             var s = 300 - parseInt(size_slider.value);
             var area = 25 * (s * s) / (400 * 400);
             var ctx = fill_drug_canvas.getContext('2d');
             var imgData = ctx.getImageData(0, 0, 400, 400).data;
+            const get_rgb_canvas = document.getElementById("get_rgb_canvas");
+            get_rgb_canvas.width = 400;
+            get_rgb_canvas.height = 400;
+            get_rgb_canvas.getContext('2d').drawImage(origin_canvas, h - s / 2, v - s / 2, s, s, 0, 0, 400, 400);
+
             var black_count = 0;
             var canvas_pixel = parseInt(imgData.length / 4);
             var drug_x_array = new Array();
