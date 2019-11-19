@@ -282,7 +282,6 @@
         function search() {
             var s = 300 - parseInt(size_slider.value);
             var area = 25 * (s * s) / (400 * 400);
-            alert(fill_drug_canvas.width);
             var ctx = fill_drug_canvas.getContext('2d');
             var imgData = ctx.getImageData(0, 0, 400, 400).data;
             var black_count = 0;
