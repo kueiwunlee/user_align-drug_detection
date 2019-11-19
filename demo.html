@@ -75,7 +75,7 @@
         </div>
         <button onclick="take_canvas();">藥品置中照一張</button><br>
         <canvas id="origin_canvas" style="width: 0px; height: 0px;"></canvas>
-        <canvas id="demo_canvas"></canvas><br>
+        <canvas id="demo_canvas" style="width: 0px; height: 0px;"></canvas><br>
         <h5>將綠色框框貼近藥品邊緣</h5>
         左<input id="horizontal_slider" class="slider" type="range" min="1" max="400" value="200">右<br><br>
         上<input id="vertial_slider" class="slider" type="range" min="1" max="400" value="200">下<br><br>
@@ -200,13 +200,13 @@
         const canvas_show = document.getElementById('demo_canvas');
         const origin_canvas = document.getElementById("origin_canvas");
         // canvas_show.style = "visibility:hidden;height:0px;width:0px;";
-        canvas_show.addEventListener('touchmove', function (e) {
+        fill_drug_canvas.addEventListener('touchmove', function (e) {
             e.preventDefault(); //阻止下拉滑動效果
         }, { passive: false });
-        const context = canvas_show.getContext('2d');
+        const context = fill_drug_canvas.getContext('2d');
         var using = false;
         var eraserEnabled = false;
-        canvas_show.ontouchstart = function (a) {
+        fill_drug_canvas.ontouchstart = function (a) {
             var x = a.touches[0].clientX;
             var y = a.touches[0].clientY;
             using = true;
@@ -217,7 +217,7 @@
                 lastPoint = { x: x, y: y }
             }
         }
-        canvas_show.ontouchmove = function (a) {
+        fill_drug_canvas.ontouchmove = function (a) {
             var x = a.touches[0].clientX;
             var y = a.touches[0].clientY;
             if (!using) { return }
@@ -226,14 +226,14 @@
             }
             else {
                 var newPoint = { "x": x, "y": y };
-                var canvas_y = parseInt(getPosition(canvas_show).y);
+                var canvas_y = parseInt(getPosition(fill_drug_canvas).y);
                 var scrollTop = document.documentElement.scrollTop || window.pageYOffset || document.body.scrollTop;
                 // alert("last_y" + lastPoint.y + ", canvas_y" + canvas_y + ", scroll" + scrollTop);
                 drawLine(lastPoint.x, parseInt(lastPoint.y) - canvas_y + scrollTop, newPoint.x, parseInt(newPoint.y) - canvas_y + scrollTop);
                 lastPoint = newPoint;
             }
         }
-        canvas_show.ontouchhend = function (a) {
+        fill_drug_canvas.ontouchhend = function (a) {
             using = false;
         }
         function drawLine(x1, y1, x2, y2) {
