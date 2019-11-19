@@ -63,9 +63,9 @@
     <div>
         <input style="width: 300px;" placeholder="ex: 刻痕(-)、十字刻痕(+)">
     </div><br>
-    <h3>步驟二:綠框對齊5cm*5cm</h3>
+    <h3 id="step2">步驟二:綠框對齊5cm*5cm</h3>
     <div>
-        <button onclick="initCameraStream();">開啟鏡頭</button><br>
+        <button onclick="initCameraStream();document.getElementById('step2').scrollIntoView();">開啟鏡頭</button><br>
         <div id="videodiv" style="position: relative;">
             <video id="streamvideo" autoplay playsinline
                 style="transform: rotate(0deg); width: 100%; height: 100%; position: relative"></video>
@@ -80,11 +80,11 @@
         左<input id="horizontal_slider" class="slider" type="range" min="1" max="400" value="200">右<br><br>
         上<input id="vertial_slider" class="slider" type="range" min="1" max="400" value="200">下<br><br>
         大<input id="size_slider" class="slider" type="range" min="1" max="300" value="150">小<br><br>
-        <button>放大綠色區塊</button><br><br>
-        <h3>步驟三:畫滿藥品區域</h3>
-        <canvas id="fill_drug_canvas" style="width: 400px; height: 400px;"></canvas><br>
+        <button onclick="document.getElementById('step3').scrollIntoView();">放大綠色區塊</button><br><br>
+        <h3 id="step3">步驟三:畫滿藥品區域</h3>
+        <canvas id="fill_drug_canvas" style="width: 0px; height: 0px;"></canvas><br>
         畫筆大小:<canvas id="pensize" style="width: 60px; height: 60px;"></canvas><br>
-        大<input id="pen_size_slider" class="slider" type="range" min="1" max="30" value="0">小<br><br>
+        大<input id="pen_size_slider" class="slider" type="range" min="1" max="30" value="15">小<br><br>
         <button>搜尋</button><br>
     </div>
     <hr>
@@ -180,12 +180,11 @@
             show_ctx.strokeStyle = "rgb(0,255,0)";
             show_ctx.lineWidth = 3;
             show_ctx.stroke();
+            fill_drug_canvas.style = "";
             fill_drug_canvas.width = 400;
             fill_drug_canvas.height = 400;
             fill_drug_canvas.getContext('2d').drawImage(origin_canvas, h - s / 2, v - s / 2, s, s, 0, 0, 400, 400);
         }
-
-
 
         function getPosition(element) {
             var x = 0;
@@ -251,7 +250,14 @@
         const pensize_canvas = document.getElementById("pensize");
         pensize_canvas.width = 60;
         pensize_canvas.height = 60;
-        var pen_R = 30;
+        var pen_R = 15;
+        var ctx = pensize_canvas.getContext('2d');
+        ctx.fillStyle = "white";
+        ctx.fillRect(0, 0, 60, 60);
+        ctx.beginPath();
+        ctx.arc(30, 30, pen_R, 0, 2 * Math.PI);
+        ctx.fillStyle = "black";
+        ctx.fill();
         pen_size_slider.oninput = function () {
             pen_R = 30 - parseInt(this.value);
             var ctx = pensize_canvas.getContext('2d');
@@ -259,7 +265,7 @@
             ctx.fillRect(0, 0, 60, 60);
             ctx.beginPath();
             ctx.arc(30, 30, pen_R, 0, 2 * Math.PI);
-            ctx.fillStyle="black";
+            ctx.fillStyle = "black";
             ctx.fill();
         }
 
