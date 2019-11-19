@@ -81,9 +81,10 @@
         上<input id="vertial_slider" class="slider" type="range" min="1" max="400" value="200">下<br><br>
         大<input id="size_slider" class="slider" type="range" min="1" max="300" value="150">小<br><br>
         <button>放大綠色區塊</button><br><br>
-        <h3>步驟三:填滿藥品區域</h3>
+        <h3>步驟三:畫滿藥品區域</h3>
         <canvas id="fill_drug_canvas" style="width: 400px; height: 400px;"></canvas><br>
-        大<input id="pen_size_slider" class="slider" type="range" min="1" max="100" value="50">小<br><br>
+        畫筆大小:<canvas id="pensize" style="width: 60px; height: 60px;"></canvas><br>
+        大<input id="pen_size_slider" class="slider" type="range" min="1" max="60" value="30">小<br><br>
         <button>搜尋</button><br>
     </div>
     <hr>
@@ -241,9 +242,21 @@
             // context.moveTo(x1, y1);//其實座標
             // context.lineTo(x2, y2);//結束座標
             context.lineWidth = 10;//預設線條粗細
-            context.arc(x1, y1, 30, 0, 2 * Math.PI, false);
+            context.arc(x1, y1, pen_R, 0, 2 * Math.PI, false);
             context.fill();
             context.closePath();//結束筆觸，路徑結束
+        }
+
+        const pen_size_slider = document.getElementById("pen_size_slider");
+        const pensize_canvas = document.getElementById("pensize");
+        var pen_R = 30;
+        pen_size_slider.oninput = function () {
+            pen_R = parseInt(this.value);
+            var ctx=pensize_canvas.getContext('2d');
+            ctx.beginPath();
+            ctx.arc(30,30,pen_R, 0, 2 * Math.PI);
+            
+            ctx.fillstroke();
         }
 
         function search() {
