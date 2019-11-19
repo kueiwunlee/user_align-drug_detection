@@ -291,7 +291,8 @@
             for (i = 0; i < imgData.length / 4; i++) {
                 if (imgData[4 * i] == 0 && imgData[4 * i + 1] == 0 && imgData[4 * i + 2] == 0) {
                     black_count += 1;
-                    drug_x_array.push(Math.floor(i / imgData.length / 4));
+                    drug_x_array.push(Math.floor(i / 400));
+                    drug_y_array.push((i % 400));
                 }
             }
             alert(drug_x_array);
