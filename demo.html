@@ -83,10 +83,13 @@
         <button onclick="document.getElementById('step3').scrollIntoView();">放大綠色區塊</button><br><br>
         <h3 id="step3">步驟三:畫滿藥品區域</h3>
         <canvas id="fill_drug_canvas" style="width: 0px; height: 0px;"></canvas><br>
-        畫筆大小:<canvas id="pensize" style="width: 60px; height: 60px;"></canvas><br>
+        畫筆大小:<canvas id="pensize" style="width: 60px; height: 60px;"></canvas>
+        <button onclick="redraw();">重畫</button><br>
         大<input id="pen_size_slider" class="slider" type="range" min="1" max="30" value="15">小<br><br>
-        <button>搜尋</button><br>
+        <button onclick="search();">搜尋</button><br>
     </div>
+    <hr>
+    <div id="drug_data"></div>
     <hr>
     <h5>搜尋結果:</h5>
     <ul id="show_pred" style="list-style:none;">
@@ -269,18 +272,28 @@
             ctx.fill();
         }
 
+        function redraw(){
+            var h = parseInt(horizontal_slider.value);
+            var v = parseInt(vertial_slider.value);
+            var s = 300 - parseInt(size_slider.value);
+            draw_greenbox(h, s, v);
+        }
+
         function search() {
-            var ul = document.getElementById("show_pred");
-            for (i = 0; i < rank.length; i++) {
-                if (document.getElementById("top" + i)) {
-                    var element = document.getElementById("top" + i);
-                    element.parentNode.removeChild(element);
-                }
-                var li = document.createElement("li");
-                li.setAttribute("id", "top" + i);
-                ul.appendChild(li);
-                document.getElementById("top" + i).innerHTML = "<img src='drug_pic64x64/" + class_name_dict[rank[i]] + "'>" + class_name_dict[rank[i]];
-            }
+            var s = 300 - parseInt(size_slider.value);
+            var area = 25 * (s * s) / (400 * 400);
+            document.getElementById("drug_data").innerHTML = "藥品面積:" + area.toFixed(3) + "cm<sup>2</sup><br>";
+            // var ul = document.getElementById("show_pred");
+            // for (i = 0; i < rank.length; i++) {
+            //     if (document.getElementById("top" + i)) {
+            //         var element = document.getElementById("top" + i);
+            //         element.parentNode.removeChild(element);
+            //     }
+            //     var li = document.createElement("li");
+            //     li.setAttribute("id", "top" + i);
+            //     ul.appendChild(li);
+            //     document.getElementById("top" + i).innerHTML = "<img src='drug_pic64x64/" + class_name_dict[rank[i]] + "'>" + class_name_dict[rank[i]];
+            // }
         }
     </script>
 </body>
