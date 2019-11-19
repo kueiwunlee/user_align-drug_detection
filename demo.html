@@ -305,9 +305,13 @@
                     b_array.push(rgb_imgData[4 * i + 2]);
                 }
             }
-            alert(r_array);
             area *= eval(black_count / canvas_pixel);
-            document.getElementById("drug_data").innerHTML = "藥品面積:" + area.toFixed(3) + "cm<sup>2</sup><br>";
+            const drug_data = document.getElementById("drug_data");
+            drug_data.innerHTML = "藥品面積:" + area.toFixed(3) + "cm<sup>2</sup><br>";
+            drug_data.innerHTML += "紅" + r_array.reduce((a, b) => a + b, 0) / r_array.length + "<br>";
+            drug_data.innerHTML += "綠" + g_array.reduce((a, b) => a + b, 0) / g_array.length + "<br>";
+            drug_data.innerHTML += "藍" + b_array.reduce((a, b) => a + b, 0) / b_array.length + "<br>";
+
             // var ul = document.getElementById("show_pred");
             // for (i = 0; i < rank.length; i++) {
             //     if (document.getElementById("top" + i)) {
