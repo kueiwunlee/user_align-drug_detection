@@ -284,11 +284,14 @@
             var area = 25 * (s * s) / (400 * 400);
             var ctx = fill_drug_canvas.getContext('2d');
             var imgData = ctx.getImageData(0, 0, 400, 400).data;
-            for (i = 0; i < imgData.length/4; i++) {
-                if(imgData[i]==0 && imgData[i+1]==0 && imgData[i+2]==0){
-                    alert("black");
+            var black_count = 0;
+            var canvas_pixel = parseInt(imgData.length / 4);
+            for (i = 0; i < imgData.length / 4; i++) {
+                if (imgData[i] == 0 && imgData[i + 1] == 0 && imgData[i + 2] == 0) {
+                    black_count += 1;
                 }
             }
+            area *= eval(black_count / canvas_pixel);
             document.getElementById("drug_data").innerHTML = "藥品面積:" + area.toFixed(3) + "cm<sup>2</sup><br>";
             // var ul = document.getElementById("show_pred");
             // for (i = 0; i < rank.length; i++) {
