@@ -272,7 +272,7 @@
             ctx.fill();
         }
 
-        function redraw(){
+        function redraw() {
             var h = parseInt(horizontal_slider.value);
             var v = parseInt(vertial_slider.value);
             var s = 300 - parseInt(size_slider.value);
@@ -282,6 +282,13 @@
         function search() {
             var s = 300 - parseInt(size_slider.value);
             var area = 25 * (s * s) / (400 * 400);
+            var ctx = fill_drug_canvas.getContext('2d');
+            var imgData = ctx.getImageData(0, 0, 400, 400).data;
+            for (i = 0; i < imgData.length/4; i++) {
+                if(imgData[i]==0 && imgData[i+1]==0 && imgData[i+2]==0){
+                    alert("black");
+                }
+            }
             document.getElementById("drug_data").innerHTML = "藥品面積:" + area.toFixed(3) + "cm<sup>2</sup><br>";
             // var ul = document.getElementById("show_pred");
             // for (i = 0; i < rank.length; i++) {
