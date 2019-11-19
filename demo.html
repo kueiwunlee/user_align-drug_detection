@@ -268,7 +268,7 @@
             ctx.fillRect(0, 0, 60, 60);
             ctx.beginPath();
             ctx.arc(30, 30, pen_R, 0, 2 * Math.PI);
-            ctx.fillStyle = "black";
+            ctx.fillStyle = "rgb(0,0,0)";
             ctx.fill();
         }
 
@@ -282,6 +282,7 @@
         function search() {
             var s = 300 - parseInt(size_slider.value);
             var area = 25 * (s * s) / (400 * 400);
+            alert(fill_drug_canvas.width);
             var ctx = fill_drug_canvas.getContext('2d');
             var imgData = ctx.getImageData(0, 0, 400, 400).data;
             var black_count = 0;
