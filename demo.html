@@ -310,11 +310,9 @@
             }
             area *= eval(black_count / canvas_pixel);
             const drug_data = document.getElementById("drug_data");
+            drug_data.innerHTML = "";
             drug_data.innerHTML += "藥品面積:" + area.toFixed(3) + "cm<sup>2</sup><br>";
-            drug_data.innerHTML += "紅" + r_array.reduce((a, b) => a + b, 0) / black_count + "<br>";
-            drug_data.innerHTML += "綠" + g_array.reduce((a, b) => a + b, 0) / black_count + "<br>";
-            drug_data.innerHTML += "藍" + b_array.reduce((a, b) => a + b, 0) / black_count + "<br>";
-
+            // drug_data.innerHTML += "紅" + r_array.reduce((a, b) => a + b, 0) / black_count + "<br>";
             var hue_array = new Array();
             var saturation_array = new Array();
             for (i = 0; i < black_count; i++) {
@@ -348,13 +346,17 @@
                 hue360count_array.push(0);
             }
             for (i = 0; i < hue_array.length; i++) {
-                hue360_array[hue_array[i]] =parseFloat(hue360_array[hue_array[i]])+parseFloat(saturation_array[i]);
-                hue360count_array[hue_array[i]] =parseInt(hue360count_array[hue_array[i]])+1;
+                hue360_array[hue_array[i]] = parseFloat(hue360_array[hue_array[i]]) + parseFloat(saturation_array[i]);
+                hue360count_array[hue_array[i]] = parseInt(hue360count_array[hue_array[i]]) + 1;
             }
+            color_bar_ctx.beginPath();
+            color_bar_ctx.moveTo(0, 30);
             for (i = 0; i < 360; i++) {
-                if(hue360count_array[i]!=0) hue360_array[i] /= hue360count_array[i];
+                if (hue360count_array[i] != 0) hue360_array[i] /= hue360count_array[i];
                 drug_data.innerHTML += i + ": " + hue360_array[i] + "<br>";
+                color_bar_ctx.lineTo(i, hue360_array[i]);
             }
+            color_bar_ctx.stroke();
 
             // var ul = document.getElementById("show_pred");
             // for (i = 0; i < rank.length; i++) {
