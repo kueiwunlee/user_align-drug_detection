@@ -325,19 +325,19 @@
                 var min = parseInt(Math.min([r, g, b]));
                 var avg = parseFloat((r + g + b) / 3);
                 var saturation = Math.pow((Math.pow((r - avg), 2) + Math.pow((g - avg), 2) + Math.pow((b - avg), 2)) / 3, 0.5);
-                var hue = 0;
+                var hue = parseInt(0);
                 if (max != min) {
                     if (g > b) {
                         hue = (max - r + g - min + b - min) / (max - min) * 60;
                     } else {
                         hue = 360 - (max - r + g - min + b - min) / (max - min) * 60;
                     }
+                    alert(hue);
                 }
                 if (hue != 0) {
                     hue = hue.toFixed(0);
                     if (hue >= 360) hue = 359
                     hue_array.push(hue);
-                    alert(hue);
                     saturation_array.push(saturation.toFixed(3));
                 }
             }
