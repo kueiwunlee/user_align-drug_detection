@@ -90,7 +90,10 @@
         <canvas id="get_rgb_canvas" style="width: 0px; height: 0px;"></canvas><br>
     </div>
     <hr>
-    <div id="drug_data"></div>
+    <div id="drug_data"></div><br>
+    <div>
+        <canvas id="color_bar" width="360" height="30"></canvas>
+    </div>
     <hr>
     <h5>搜尋結果:</h5>
     <ul id="show_pred" style="list-style:none;">
@@ -307,10 +310,48 @@
             }
             area *= eval(black_count / canvas_pixel);
             const drug_data = document.getElementById("drug_data");
-            drug_data.innerHTML = "藥品面積:" + area.toFixed(3) + "cm<sup>2</sup><br>";
+            drug_data.innerHTML += "藥品面積:" + area.toFixed(3) + "cm<sup>2</sup><br>";
             drug_data.innerHTML += "紅" + r_array.reduce((a, b) => a + b, 0) / black_count + "<br>";
             drug_data.innerHTML += "綠" + g_array.reduce((a, b) => a + b, 0) / black_count + "<br>";
             drug_data.innerHTML += "藍" + b_array.reduce((a, b) => a + b, 0) / black_count + "<br>";
+
+            var hue_array = new Array();
+            var saturation_array = new Array();
+            for (i = 0; i < black_count; i++) {
+                var r = parseInt(r_array[i]);
+                var g = parseInt(g_array[i]);
+                var b = parseInt(b_array[i]);
+                var max = parseInt(Math.max([r, g, b]));
+                var min = parseInt(Math.min([r, g, b]));
+                var avg = parseFloat((r + g + b) / 3);
+                var saturation = Math.pow((Math.pow((r - avg), 2) + Math.pow((g - avg), 2) + Math.pow((b - avg), 2)) / 3, 0.5);
+                var hue = 0;
+                if (max != min) {
+                    if (g > b) {
+                        hue = (max - r + g - min + b - min) / (max - min) * 60;
+                    } else {
+                        hue = 360 - (max - r + g - min + b - min) / (max - min) * 60;
+                    }
+                }
+                if (hue != 0) {
+                    hue = parseInt(hue.toFixed(0));
+                    if (hue >= 360) hue = 359
+                    hue_array.push(hue);
+                    saturation_array.push(saturation.toFixed(3));
+                }
+            }
+            var hue360_array = new Array();
+            var hue360count_array = new Array();
+            for (i = 0; i < 360; i++) {
+                hue360_array.push(0);
+                hue360count_array.push(0);
+            }
+            for (i = 0; i < hue_array.length; i++) {
+                hue360count_array[hue_array[i]] += saturation_array[i];
+            }
+            for (i = 0; i < 360; i++) {
+                hue360_array[i] /= hue360count_array[i];
+            }
 
             // var ul = document.getElementById("show_pred");
             // for (i = 0; i < rank.length; i++) {
@@ -324,6 +365,30 @@
             //     document.getElementById("top" + i).innerHTML = "<img src='drug_pic64x64/" + class_name_dict[rank[i]] + "'>" + class_name_dict[rank[i]];
             // }
         }
+
+        var color_bar = document.getElementById("color_bar");
+        var color_bar_ctx = color_bar.getContext("2d");
+        var color_bar_width = 360;
+        var color_bar_height = 30;
+        // 建立線型漸層物件 參數依序為 x0(x起始點)、y0(y起始點)、x1(x結束點)、y1(y結束點)
+        var grd = color_bar_ctx.createLinearGradient(0, 0, color_bar_width, color_bar_height);
+        // 設定顏色位置 參數依序為 position(0.0 到 1.0，0 即為起始點，1 即為結束點)、顏色代碼
+        grd.addColorStop(0, "rgb(255,0,0)");
+        grd.addColorStop(0.08, "rgb(255,128,0)");
+        grd.addColorStop(0.17, "rgb(255,255,0)");
+        grd.addColorStop(0.25, "rgb(128,255,0)");
+        grd.addColorStop(0.33, "rgb(0,255,0)");
+        grd.addColorStop(0.42, "rgb(0,255,128)");
+        grd.addColorStop(0.5, "rgb(0,255,255)");
+        grd.addColorStop(0.58, "rgb(0,128,255)");
+        grd.addColorStop(0.67, "rgb(0,0,255)");
+        grd.addColorStop(0.75, "rgb(128,0,255)");
+        grd.addColorStop(0.83, "rgb(255,0,255)");
+        grd.addColorStop(1, "rgb(255,0,128)");
+        // 設定填滿樣式
+        color_bar_ctx.fillStyle = grd;
+        // 執行填滿繪製 參數依序為 x、y、width(寬)、height(高)
+        color_bar_ctx.fillRect(0, 0, color_bar_width, color_bar_height);
     </script>
 </body>
 
