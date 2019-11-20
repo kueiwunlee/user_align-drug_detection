@@ -354,7 +354,7 @@
             for (i = 0; i < 360; i++) {
                 if (hue360count_array[i] != 0) hue360_array[i] /= hue360count_array[i];
                 drug_data.innerHTML += i + ": " + hue360_array[i] + "<br>";
-                color_bar_ctx.lineTo(i, hue360_array[i]);
+                color_bar_ctx.lineTo(i, (130-parseInt(hue360_array[i]))/130*30);
             }
             color_bar_ctx.stroke();
 
