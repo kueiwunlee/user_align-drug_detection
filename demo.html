@@ -317,25 +317,22 @@
 
             var hue_array = new Array();
             var saturation_array = new Array();
-            r_array.push(10);
-            g_array.push(100);
-            b_array.push(200);
             for (i = 0; i < black_count; i++) {
                 var r = parseInt(r_array[i]);
                 var g = parseInt(g_array[i]);
                 var b = parseInt(b_array[i]);
-                var max = parseInt(Math.max([r, g, b]));
-                var min = parseInt(Math.min([r, g, b]));
+                var max = parseInt(Math.max(r, g, b));
+                var min = parseInt(Math.min(r, g, b));
                 var avg = parseFloat((r + g + b) / 3);
                 var saturation = Math.pow((Math.pow((r - avg), 2) + Math.pow((g - avg), 2) + Math.pow((b - avg), 2)) / 3, 0.5);
                 var hue = parseInt(0);
+                // alert("r" + r + ", g" + g + ", b" + b + ", max" + max + ", min" + min + ", avg" + avg);
                 if (max != min) {
                     if (g > b) {
                         hue = (max - r + g - min + b - min) / (max - min) * 60;
                     } else {
                         hue = 360 - (max - r + g - min + b - min) / (max - min) * 60;
                     }
-                    alert(hue);
                 }
                 if (hue != 0) {
                     hue = hue.toFixed(0);
@@ -350,15 +347,12 @@
                 hue360_array.push(0);
                 hue360count_array.push(0);
             }
-            alert(hue360_array);
-            alert(hue_array);
-            alert(saturation_array);
             for (i = 0; i < hue_array.length; i++) {
-                hue360count_array[hue_array[i]] += saturation_array[i];
+                hue360_array[hue_array[i]] =parseFloat(hue360_array[hue_array[i]])+parseFloat(saturation_array[i]);
+                hue360count_array[hue_array[i]] =parseInt(hue360count_array[hue_array[i]])+1;
             }
-            alert(hue360_array);
             for (i = 0; i < 360; i++) {
-                hue360_array[i] /= hue360count_array[i];
+                if(hue360count_array[i]!=0) hue360_array[i] /= hue360count_array[i];
                 drug_data.innerHTML += i + ": " + hue360_array[i] + "<br>";
             }
 
