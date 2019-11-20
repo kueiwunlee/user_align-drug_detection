@@ -354,10 +354,12 @@
             for (i = 0; i < 360; i++) {
                 if (hue360count_array[i] != 0) hue360_array[i] /= hue360count_array[i];
                 drug_data.innerHTML += i + ": " + hue360_array[i] + "<br>";
-                color_bar_ctx.lineTo(i, parseInt((130-parseInt(hue360_array[i]))/130*30));
+                color_bar_ctx.lineTo(i, parseInt((130 - parseInt(hue360_array[i])) / 130 * 30));
             }
+            color_bar_ctx.lineWidth = 3;
             color_bar_ctx.stroke();
-
+            color_bar_ctx.fillStyle = grd;
+            color_bar_ctx.fillRect(0, 0, color_bar_width, color_bar_height);
             // var ul = document.getElementById("show_pred");
             // for (i = 0; i < rank.length; i++) {
             //     if (document.getElementById("top" + i)) {
