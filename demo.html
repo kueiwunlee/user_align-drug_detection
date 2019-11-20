@@ -86,10 +86,11 @@
         畫筆大小:<canvas id="pensize" style="width: 60px; height: 60px;"></canvas>
         <button onclick="redraw();">重畫</button><br>
         大<input id="pen_size_slider" class="slider" type="range" min="1" max="30" value="15">小<br><br>
-        <button onclick="search();">搜尋</button><br>
+        <button onclick="search();document.getElementById('property').scrollIntoView();">搜尋</button><br>
         <canvas id="get_rgb_canvas" style="width: 0px; height: 0px;"></canvas><br>
     </div>
     <hr>
+    <h3 id="property">藥品特徵</h3>
     <div id="drug_data"></div><br>
     <div>
         <canvas id="color_bar" width="360" height="30"></canvas>
@@ -360,7 +361,7 @@
             }
             color_bar_ctx.lineWidth = 3;
             color_bar_ctx.stroke();
-            
+
             // var ul = document.getElementById("show_pred");
             // for (i = 0; i < rank.length; i++) {
             //     if (document.getElementById("top" + i)) {
@@ -393,10 +394,6 @@
         grd.addColorStop(0.75, "rgb(128,0,255)");
         grd.addColorStop(0.83, "rgb(255,0,255)");
         grd.addColorStop(1, "rgb(255,0,128)");
-        // 設定填滿樣式
-        color_bar_ctx.fillStyle = grd;
-        // 執行填滿繪製 參數依序為 x、y、width(寬)、height(高)
-        color_bar_ctx.fillRect(0, 0, color_bar_width, color_bar_height);
     </script>
 </body>
 
