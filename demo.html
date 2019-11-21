@@ -7,7 +7,8 @@
         integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <title>藥物辨識</title>
-    <script src="jquery.js"></script>
+    <script src="tfjs.js"></script>
+    <script src="drug_data.js"></script>
     <style>
         h1,
         h2,
@@ -362,17 +363,25 @@
             color_bar_ctx.lineWidth = 3;
             color_bar_ctx.stroke();
 
-            // var ul = document.getElementById("show_pred");
-            // for (i = 0; i < rank.length; i++) {
-            //     if (document.getElementById("top" + i)) {
-            //         var element = document.getElementById("top" + i);
-            //         element.parentNode.removeChild(element);
-            //     }
-            //     var li = document.createElement("li");
-            //     li.setAttribute("id", "top" + i);
-            //     ul.appendChild(li);
-            //     document.getElementById("top" + i).innerHTML = "<img src='drug_pic64x64/" + class_name_dict[rank[i]] + "'>" + class_name_dict[rank[i]];
-            // }
+            alert(area_array);
+            rank = [0, 1, 2, 3, 4, 5];
+            var ul = document.getElementById("show_pred");
+            for (i = 0; i < rank.length; i++) {
+                if (document.getElementById("top" + i)) {
+                    var element = document.getElementById("top" + i);
+                    element.parentNode.removeChild(element);
+                }
+                var li = document.createElement("li");
+                li.setAttribute("id", "top" + i);
+                // li.setAttribute("style", "display:inline;");
+                ul.appendChild(li);
+                var fn = class_filename_dict[rank[i]];
+                document.getElementById("top" + i).innerHTML += "<img src='pic_64x64/" + fn + "'>" + filename_tfda_dict[fn] + "<br>";
+                document.getElementById("top" + i).innerHTML += "<b>商品名:</b> " + filename_brand_dict[fn] + "<br>";
+                document.getElementById("top" + i).innerHTML += "<b>中文名:</b> " + filename_chinese_dict[fn] + "<br>";
+                document.getElementById("top" + i).innerHTML += "<b>主成分:</b> " + filename_ingredient_dict[fn];
+
+            }
         }
 
         var color_bar = document.getElementById("color_bar");
@@ -394,6 +403,11 @@
         grd.addColorStop(0.75, "rgb(128,0,255)");
         grd.addColorStop(0.83, "rgb(255,0,255)");
         grd.addColorStop(1, "rgb(255,0,128)");
+        var area_array = new Array();
+        for (i = 0; i < class_power_array.length; i++) {
+            var fn = class_filename_dict[i];
+            area_array.push(filename_area_dict[fn]);
+        }
     </script>
 </body>
 
