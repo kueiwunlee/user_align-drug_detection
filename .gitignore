@@ -1,2 +1,4 @@
 *.ipynb
 .pytest_cache/
+*.csv
+*.xlsx
