@@ -379,6 +379,7 @@
             //比對特徵
             rank = await indices.data();
             var user_proper = document.getElementById("user_proper").value.toLowerCase();
+            var rank_score = new Array();
 
             //搜尋結果
             var ul = document.getElementById("show_pred");
@@ -410,21 +411,41 @@
                             }
                         }
                     }
-                    var score = 0;
-                    for (j = 0; j < user_proper.length; j++) {
-                        for (k = 0; k < tar_proper.length; k++) {
-                            if (user_proper.substr(j, 1) == tar_proper.substr(k, 1)) {
-                                score += 1;
-                                if (score == (user_proper.length - 1) && score >= 1) {
-                                    appendHTML(i, fn);
-                                    break;
-                                }
-                            }
-                        }
-                    }
                 }
-
+                // if (user_proper == "") {
+                //     if (tar_proper == "") {
+                //         rank_score.push(0);
+                //     } else if (tar_proper.length == 1) {
+                //         rank_score.push(1);
+                //     } else {
+                //         rank_score.push(2);
+                //     }
+                // } else {
+                //     var score = 0;
+                //     var rank_class = 2;
+                //     for (j = 0; j < user_proper.length; j++) {
+                //         for (k = 0; k < tar_proper.length; k++) {
+                //             if (user_proper.substr(j, 1) == tar_proper.substr(k, 1)) {
+                //                 score += 1;
+                //                 if (score == (user_proper.length - 1) && score >= 1) rank_class = 1;
+                //                 if (score == user_proper.length) rank_class = 0;
+                //             }
+                //         }
+                //     }
+                //     rank_score.push(rank_class);
+                // }
             }
+            // var max_score = Math.max.apply(null, rank_score);
+            // var append_count = 0;
+            // for (j = 0; j <= max_score; j++) {
+            //     for (i = 0; i < rank.length; i++) {
+            //         var fn = class_filename_dict[rank[i]];
+            //         if (rank_score[i] == j) {
+            //             appendHTML(append_count, fn);
+            //             append_count += 1;
+            //         }
+            //     }
+            // }
             document.getElementById('property').scrollIntoView();
         }
 
