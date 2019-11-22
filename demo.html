@@ -365,7 +365,7 @@
             color_bar_ctx.stroke();
 
             //計算相似
-            const calc_count = 5;
+            const calc_count = 12;
             var tf_area = tf.tensor1d(area_array);
             var tf_user_area = tf.tensor1d([parseFloat(area)]);
             tf_area = tf.mul(tf.abs(tf_user_area.sub(tf_area)), tf.scalar(100));
@@ -378,42 +378,7 @@
 
             //比對特徵
             rank = await indices.data();
-            var rank_proper_score = new Array();
             var user_proper = document.getElementById("user_proper").value.toLowerCase();
-            for (i = 0; i < rank.length; i++) {
-                var fn = class_filename_dict[rank[i]];
-                var score = 0;
-                p_str = filename_proper_dict[fn].toLowerCase();
-                if (p_str.length >= user_proper.length) {
-                    for (j = 0; j < p_str.length; j++) {
-                        for (k = 0; k < user_proper.length; k++) {
-                            if (p_str.substr(j, 1) == user_proper.substr(k, 1)) {
-                                score += 1;
-                                break
-                            }
-                        }
-                        score -= 1;
-                    }
-                } else {
-                    for (k = 0; k < user_proper.length; k++) {
-                        for (j = 0; j < p_str.length; j++) {
-                            if (p_str.substr(j, 1) == user_proper.substr(k, 1)) {
-                                score += 1;
-                                break
-                            }
-                        }
-                        score -= 1;
-                    }
-                }
-                rank_proper_score.push(score);
-            }
-            var tf_pscore = tf.tensor1d(rank_proper_score);
-            var { values, indices } = tf.topk(tf.scalar(0).sub(tf_pscore), calc_count);
-            var proper_rank = await indices.data();
-            var new_rank = new Array();
-            for (i = 0; i < rank.length; i++) {
-                new_rank.push(proper_rank[i]);
-            }
 
             //搜尋結果
             var ul = document.getElementById("show_pred");
@@ -427,14 +392,48 @@
                 // li.setAttribute("style", "display:inline;");
                 ul.appendChild(li);
                 var fn = class_filename_dict[rank[i]];
-                document.getElementById("top" + i).innerHTML += "<img src='pic_64x64/" + fn + "'><b>特徵: </b>" + filename_proper_dict[fn] + "<br>";
-                document.getElementById("top" + i).innerHTML += "<b>TFDA:</b> " + filename_tfda_dict[fn] + "<br>";
-                document.getElementById("top" + i).innerHTML += "<b>商品名:</b> " + filename_brand_dict[fn] + "<br>";
-                document.getElementById("top" + i).innerHTML += "<b>中文名:</b> " + filename_chinese_dict[fn] + "<br>";
-                document.getElementById("top" + i).innerHTML += "<b>主成分:</b> " + filename_ingredient_dict[fn];
+                var tar_proper = filename_proper_dict[fn];
+                if (user_proper == "") {
+                    if (tar_proper == "") {
+                        appendHTML(i, fn);
+                    }
+                } else {
+                    var score = 0;
+                    for (j = 0; j < user_proper.length; j++) {
+                        for (k = 0; k < tar_proper.length; k++) {
+                            if (user_proper.substr(j, 1) == tar_proper.substr(k, 1)) {
+                                score += 1;
+                                if (score == user_proper.length) {
+                                    appendHTML(i, fn);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    var score = 0;
+                    for (j = 0; j < user_proper.length; j++) {
+                        for (k = 0; k < tar_proper.length; k++) {
+                            if (user_proper.substr(j, 1) == tar_proper.substr(k, 1)) {
+                                score += 1;
+                                if (score == (user_proper.length - 1) && score >= 1) {
+                                    appendHTML(i, fn);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
 
             }
             document.getElementById('property').scrollIntoView();
+        }
+
+        function appendHTML(i, fn) {
+            document.getElementById("top" + i).innerHTML += "<img src='pic_64x64/" + fn + "'><b>特徵: </b>" + filename_proper_dict[fn] + "<br>";
+            document.getElementById("top" + i).innerHTML += "<b>TFDA:</b> " + filename_tfda_dict[fn] + "<br>";
+            document.getElementById("top" + i).innerHTML += "<b>商品名:</b> " + filename_brand_dict[fn] + "<br>";
+            document.getElementById("top" + i).innerHTML += "<b>中文名:</b> " + filename_chinese_dict[fn] + "<br>";
+            document.getElementById("top" + i).innerHTML += "<b>主成分:</b> " + filename_ingredient_dict[fn];
         }
 
         var color_bar = document.getElementById("color_bar");
