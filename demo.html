@@ -62,7 +62,7 @@
     <h3>步驟一:輸入藥上的特徵</h3>
     <h5>不分英數、大小寫、順序、正反面、刻痕</h5>
     <div>
-        <input style="width: 300px;" placeholder="ex: 刻痕(-)、十字刻痕(+)">
+        <input id="user_proper" style="width: 300px;" placeholder="ex: 刻痕(-)、十字刻痕(+)">
     </div><br>
     <h3 id="step2">步驟二:綠框對齊5cm*5cm</h3>
     <div>
@@ -87,7 +87,7 @@
         畫筆大小:<canvas id="pensize" style="width: 60px; height: 60px;"></canvas>
         <button onclick="redraw();">重畫</button><br>
         大<input id="pen_size_slider" class="slider" type="range" min="1" max="30" value="15">小<br><br>
-        <button onclick="search();document.getElementById('property').scrollIntoView();">搜尋</button><br>
+        <button onclick="search();">搜尋</button><br>
         <canvas id="get_rgb_canvas" style="width: 0px; height: 0px;"></canvas><br>
     </div>
     <hr>
@@ -285,7 +285,7 @@
             draw_greenbox(h, s, v);
         }
 
-        function search() {
+        async function search() {
             color_bar_ctx.fillStyle = grd;
             color_bar_ctx.fillRect(0, 0, color_bar_width, color_bar_height);
             var h = parseInt(horizontal_slider.value);
@@ -313,9 +313,10 @@
                 }
             }
             area *= eval(black_count / canvas_pixel);
+            area = area.toFixed(3)
             const drug_data = document.getElementById("drug_data");
             drug_data.innerHTML = "";
-            drug_data.innerHTML += "藥品面積:" + area.toFixed(3) + "cm<sup>2</sup><br>";
+            drug_data.innerHTML += "藥品面積:" + area + "cm<sup>2</sup><br>";
             // drug_data.innerHTML += "紅" + r_array.reduce((a, b) => a + b, 0) / black_count + "<br>";
             var hue_array = new Array();
             var saturation_array = new Array();
@@ -363,8 +364,58 @@
             color_bar_ctx.lineWidth = 3;
             color_bar_ctx.stroke();
 
-            alert(area_array);
-            rank = [0, 1, 2, 3, 4, 5];
+            //計算相似
+            const calc_count = 5;
+            var tf_area = tf.tensor1d(area_array);
+            var tf_user_area = tf.tensor1d([parseFloat(area)]);
+            tf_area = tf.mul(tf.abs(tf_user_area.sub(tf_area)), tf.scalar(100));
+            drug_data.innerHTML += "面積均差: " + tf.mean(tf_area) + "<br>";
+            var tf_power = tf.tensor2d(class_power_array);
+            tf_power = tf.abs(tf_power.sub(hue360_array));
+
+            drug_data.innerHTML += "色均差: " + tf.mean(tf_power.sum(1)) + "<br>";
+            var { values, indices } = tf.topk(tf.scalar(0).sub(tf.add(tf_area, tf_power.sum(1))), calc_count);
+
+            //比對特徵
+            rank = await indices.data();
+            var rank_proper_score = new Array();
+            var user_proper = document.getElementById("user_proper").value.toLowerCase();
+            for (i = 0; i < rank.length; i++) {
+                var fn = class_filename_dict[rank[i]];
+                var score = 0;
+                p_str = filename_proper_dict[fn].toLowerCase();
+                if (p_str.length >= user_proper.length) {
+                    for (j = 0; j < p_str.length; j++) {
+                        for (k = 0; k < user_proper.length; k++) {
+                            if (p_str.substr(j, 1) == user_proper.substr(k, 1)) {
+                                score += 1;
+                                break
+                            }
+                        }
+                        score -= 1;
+                    }
+                } else {
+                    for (k = 0; k < user_proper.length; k++) {
+                        for (j = 0; j < p_str.length; j++) {
+                            if (p_str.substr(j, 1) == user_proper.substr(k, 1)) {
+                                score += 1;
+                                break
+                            }
+                        }
+                        score -= 1;
+                    }
+                }
+                rank_proper_score.push(score);
+            }
+            var tf_pscore = tf.tensor1d(rank_proper_score);
+            var { values, indices } = tf.topk(tf.scalar(0).sub(tf_pscore), calc_count);
+            var proper_rank = await indices.data();
+            var new_rank = new Array();
+            for (i = 0; i < rank.length; i++) {
+                new_rank.push(proper_rank[i]);
+            }
+
+            //搜尋結果
             var ul = document.getElementById("show_pred");
             for (i = 0; i < rank.length; i++) {
                 if (document.getElementById("top" + i)) {
@@ -376,12 +427,14 @@
                 // li.setAttribute("style", "display:inline;");
                 ul.appendChild(li);
                 var fn = class_filename_dict[rank[i]];
-                document.getElementById("top" + i).innerHTML += "<img src='pic_64x64/" + fn + "'>" + filename_tfda_dict[fn] + "<br>";
+                document.getElementById("top" + i).innerHTML += "<img src='pic_64x64/" + fn + "'><b>特徵: </b>" + filename_proper_dict[fn] + "<br>";
+                document.getElementById("top" + i).innerHTML += "<b>TFDA:</b> " + filename_tfda_dict[fn] + "<br>";
                 document.getElementById("top" + i).innerHTML += "<b>商品名:</b> " + filename_brand_dict[fn] + "<br>";
                 document.getElementById("top" + i).innerHTML += "<b>中文名:</b> " + filename_chinese_dict[fn] + "<br>";
                 document.getElementById("top" + i).innerHTML += "<b>主成分:</b> " + filename_ingredient_dict[fn];
 
             }
+            document.getElementById('property').scrollIntoView();
         }
 
         var color_bar = document.getElementById("color_bar");
