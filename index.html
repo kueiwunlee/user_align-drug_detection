@@ -370,13 +370,12 @@
             block = 6;
             xy_len = xy_array.length - (xy_array.length % block);
             var arr = await tf.split(tf.topk(tf.pow(tf.sum(tf.squaredDifference(xy_array, tf.mean(xy_array, 0)), 1), tf.scalar(0.5)), xy_len).values, block, 0);
-            drug_data.innerHTML += arr[0] + "<br>";
             const max_s = tf.mean(arr[0], 0);
             var shape_array = new Array();
             for (i = 1; i < block; i++) {
                 var shape_vec = await tf.div(tf.mean(arr[i], 0), max_s).data();
                 shape_vec = parseFloat(shape_vec).toFixed(3);
-                drug_data.innerHTML += "shape" + i + ": " + shape_vec + ", arr" + tf.mean(arr[i], 0) + ", max" + max_s + "<br>";
+                drug_data.innerHTML += "shape" + i + ": " + shape_vec + "<br>";
                 shape_array.push(shape_vec);
             }
 
