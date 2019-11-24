@@ -304,12 +304,14 @@
             var r_array = new Array();
             var g_array = new Array();
             var b_array = new Array();
+            var xy_array = new Array();
             for (i = 0; i < imgData.length / 4; i++) {
                 if (imgData[4 * i] == 0 && imgData[4 * i + 1] == 0 && imgData[4 * i + 2] == 0) {
                     black_count += 1;
                     r_array.push(rgb_imgData[4 * i]);
                     g_array.push(rgb_imgData[4 * i + 1]);
                     b_array.push(rgb_imgData[4 * i + 2]);
+                    // xy_array.push([Math.floor(i / 400), i % 400]);
                 }
             }
             area *= eval(black_count / canvas_pixel);
@@ -365,6 +367,14 @@
             color_bar_ctx.stroke();
 
             //計算相似
+            block = 6;
+            xy_len = xy_array.length - (xy_array.length % block);
+            var arr = tf.split(tf.topk(tf.pow(tf.sum(tf.squaredDifference(xy_array, tf.mean(x, 0)), 1), tf.scalar(0.5)), xy_len).values, block, 0);
+            const max_s = tf.mean(arr[0], 0);
+            for (i = 1; i < block; i++) {
+                drug_data.innerHTML += await "shape" + i + ": " + tf.div(tf.mean(arr[i], 0), max_s).data() + "<br>";
+            }
+
             const calc_count = 12;
             var tf_area = tf.tensor1d(area_array);
             var tf_user_area = tf.tensor1d([parseFloat(area)]);
@@ -394,24 +404,27 @@
                 ul.appendChild(li);
                 var fn = class_filename_dict[rank[i]];
                 var tar_proper = filename_proper_dict[fn];
-                if (user_proper == "") {
-                    if (tar_proper == "") {
-                        appendHTML(i, fn);
-                    }
-                } else {
-                    var score = 0;
-                    for (j = 0; j < user_proper.length; j++) {
-                        for (k = 0; k < tar_proper.length; k++) {
-                            if (user_proper.substr(j, 1) == tar_proper.substr(k, 1)) {
-                                score += 1;
-                                if (score == user_proper.length) {
-                                    appendHTML(i, fn);
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
+                appendHTML(i, fn);
+                //唯一
+                // if (user_proper == "") {
+                //     if (tar_proper == "") {
+                //         appendHTML(i, fn);
+                //     }
+                // } else {
+                //     var score = 0;
+                //     for (j = 0; j < user_proper.length; j++) {
+                //         for (k = 0; k < tar_proper.length; k++) {
+                //             if (user_proper.substr(j, 1) == tar_proper.substr(k, 1)) {
+                //                 score += 1;
+                //                 if (score == user_proper.length) {
+                //                     appendHTML(i, fn);
+                //                     break;
+                //                 }
+                //             }
+                //         }
+                //     }
+                // }
+                //容錯
                 // if (user_proper == "") {
                 //     if (tar_proper == "") {
                 //         rank_score.push(0);
