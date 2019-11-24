@@ -369,6 +369,7 @@
             //計算相似
             block = 6;
             xy_len = xy_array.length - (xy_array.length % block);
+            alert(tf.pow(tf.sum(tf.squaredDifference(xy_array, tf.mean(xy_array, 0)), 1), tf.scalar(0.5)));
             var arr = await tf.split(tf.topk(tf.pow(tf.sum(tf.squaredDifference(xy_array, tf.mean(xy_array, 0)), 1), tf.scalar(0.5)), xy_len).values, block, 0);
             drug_data.innerHTML += arr[0] + "<br>";
             const max_s = tf.mean(arr[0], 0);
