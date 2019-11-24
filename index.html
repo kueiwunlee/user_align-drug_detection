@@ -373,7 +373,7 @@
             const max_s = tf.mean(arr[0], 0);
             var shape_array = new Array();
             for (i = 1; i < block; i++) {
-                await shape_array.push(tf.div(tf.mean(arr[i], 0), max_s).data());
+                shape_array.push(await tf.div(tf.mean(arr[i], 0), max_s).data());
             }
             alert(shape_array);
 
