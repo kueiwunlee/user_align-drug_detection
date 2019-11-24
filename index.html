@@ -7,7 +7,8 @@
         integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <title>藥物辨識</title>
-    <script src="jquery.js"></script>
+    <script src="tfjs.js"></script>
+    <script src="drug_data.js"></script>
     <style>
         h1,
         h2,
@@ -15,6 +16,11 @@
         h5,
         h6,
         div {
+            font-family: 微軟正黑體;
+            text-align: center;
+        }
+
+        .center {
             font-family: 微軟正黑體;
             text-align: center;
         }
@@ -56,84 +62,59 @@
     <h3>步驟一:輸入藥上的特徵</h3>
     <h5>不分英數、大小寫、順序、正反面、刻痕</h5>
     <div>
-        <input style="width: 300px;" placeholder="ex: 刻痕(-)、十字刻痕(+)">
+        <input id="user_proper" style="width: 300px;" placeholder="ex: 刻痕(-)、十字刻痕(+)">
     </div><br>
-    <h3>步驟二:選顏色(預設:白)</h3>
+    <h3 id="step2">步驟二:綠框對齊5cm*5cm</h3>
     <div>
-        <input type="radio" name="white_drug" value="white" checked>白色<br>
-        <input id="notwhite" type="radio" name="white_drug">下方選顏色
-        <canvas id="color_pick" width="30" height="30"></canvas><br>
-        <canvas id="color_bar" width="360" height="30"></canvas><br>
-        <input id="saturation_bar" class="slider" type="range" min="1" max="360" value="50"
-            onchange="document.getElementById('notwhite').checked=true;"><br>
-        色調: <a id="degree">50</a><sup>o</sup><br>
-        <button>初步搜尋</button><br>
+        <button onclick="initCameraStream();document.getElementById('step2').scrollIntoView();">開啟鏡頭</button><br>
+        <div id="videodiv" style="position: relative;">
+            <video id="streamvideo" autoplay playsinline
+                style="transform: rotate(0deg); width: 100%; height: 100%; position: relative"></video>
+            <div id="innerdiv"
+                style="width: 300px; height: 300px; border-color:rgb(0,255,0); border-style: solid; position: absolute; top: 50px; background: rgba(0,0,0,0);">
+            </div>
+        </div>
+        <button onclick="take_canvas();">藥品置中照一張</button><br>
+        <canvas id="origin_canvas" style="width: 0px; height: 0px;"></canvas>
+        <canvas id="demo_canvas" style="width: 0px; height: 0px;"></canvas><br>
+        <h5>將綠色框框貼近藥品邊緣</h5>
+        左<input id="horizontal_slider" class="slider" type="range" min="1" max="400" value="200">右<br><br>
+        上<input id="vertial_slider" class="slider" type="range" min="1" max="400" value="200">下<br><br>
+        大<input id="size_slider" class="slider" type="range" min="1" max="300" value="150">小<br><br>
+        <button onclick="document.getElementById('step3').scrollIntoView();">放大綠色區塊</button><br><br>
+        <h3 id="step3">步驟三:畫滿藥品區域</h3>
+        <canvas id="fill_drug_canvas" style="width: 0px; height: 0px;"></canvas><br>
+        畫筆大小:<canvas id="pensize" style="width: 60px; height: 60px;"></canvas>
+        <button onclick="redraw();">重畫</button><br>
+        大<input id="pen_size_slider" class="slider" type="range" min="1" max="30" value="15">小<br><br>
+        <button onclick="search();">搜尋</button><br>
+        <canvas id="get_rgb_canvas" style="width: 0px; height: 0px;"></canvas><br>
     </div>
     <hr>
-    <h5>初步搜尋結果:</h5>
+    <h3 id="property">藥品特徵</h3>
+    <div id="drug_data"></div><br>
+    <div>
+        <canvas id="color_bar" width="360" height="30"></canvas>
+    </div>
+    <hr>
+    <h5>搜尋結果:</h5>
     <ul id="show_pred" style="list-style:none;">
         <li id="top0">尚未搜尋</li>
     </ul>
-    <h6>若搜尋不到請至下方第三步</h6>
-    <hr>
-    <h3>步驟三:標記藥品位置</h3>
-    <div>
-        <button onclick="initCameraStream();">開啟鏡頭</button><br>
-        <video id="streamvideo" class="videostream" autoplay playsinline></video><br>
-        <button onclick="take_canvas();">藥品置中照一張</button><br>
-        <canvas id="demo_canvas"></canvas><br>
-        <button>深度搜尋</button><br>
-    </div>
-    <hr>
-    <h5>深度搜尋結果:</h5>
-    <ul id="show_pred_deep" style="list-style:none;">
-        <li id="deep_top0">尚未搜尋</li>
-    </ul>
     <script type="text/javascript">
-        var c = document.getElementById("color_bar");
-        var ctx = c.getContext("2d");
-        var color_bar_width = 360;
-        var color_bar_height = 30;
-        // 建立線型漸層物件 參數依序為 x0(x起始點)、y0(y起始點)、x1(x結束點)、y1(y結束點)
-        var grd = ctx.createLinearGradient(0, 0, color_bar_width, color_bar_height);
-        // 設定顏色位置 參數依序為 position(0.0 到 1.0，0 即為起始點，1 即為結束點)、顏色代碼
-        grd.addColorStop(0, "rgb(255,0,0)");
-        grd.addColorStop(0.08, "rgb(255,128,0)");
-        grd.addColorStop(0.17, "rgb(255,255,0)");
-        grd.addColorStop(0.25, "rgb(128,255,0)");
-        grd.addColorStop(0.33, "rgb(0,255,0)");
-        grd.addColorStop(0.42, "rgb(0,255,128)");
-        grd.addColorStop(0.5, "rgb(0,255,255)");
-        grd.addColorStop(0.58, "rgb(0,128,255)");
-        grd.addColorStop(0.67, "rgb(0,0,255)");
-        grd.addColorStop(0.75, "rgb(128,0,255)");
-        grd.addColorStop(0.83, "rgb(255,0,255)");
-        grd.addColorStop(1, "rgb(255,0,128)");
-        // 設定填滿樣式
-        ctx.fillStyle = grd;
-        // 執行填滿繪製 參數依序為 x、y、width(寬)、height(高)
-        ctx.fillRect(0, 0, color_bar_width, color_bar_height);
-
-        var slider = document.getElementById("saturation_bar");
-        var output = document.getElementById("degree");
-        var color_picked = document.getElementById("color_pick");
-        slider.oninput = function () {
-            output.innerHTML = this.value;
-            cs = this.value;
-            r = ctx.getImageData(cs - 1, 0, cs, 1).data[0];
-            g = ctx.getImageData(cs - 1, 0, cs, 1).data[1];
-            b = ctx.getImageData(cs - 1, 0, cs, 1).data[2];
-            color_picked.style.backgroundColor = "rgb(" + r + "," + g + "," + b + ")";
-        }
-
         const video = document.getElementById("streamvideo");
+        video.style = "visibility:hidden;height:0px;width:0px;";
+        const videodiv = document.getElementById("videodiv");
+        videodiv.style = "visibility:hidden;height:0px;width:0px;";
+        const left_width = (parseInt(window.innerWidth) - 410) / 2;
+        document.getElementById("innerdiv").style.left = (left_width + 50) + "px";
         function initCameraStream() {
             video.style = "";
             var constraints = {
                 audio: false,
                 video: {
-                    width: { min: 300, ideal: window.innerWidth, max: 500 },
-                    height: { min: 300, ideal: window.innerWidth, max: 500 },
+                    width: 400,//{ min: 300, ideal: window.innerWidth, max: 500 },
+                    height: 400,//{ min: 300, ideal: window.innerWidth, max: 500 },
                     facingMode: 'environment'
                 }
             };
@@ -152,6 +133,7 @@
                     alert("Permission denied. Please refresh and give permission.");
                 }
             }
+            videodiv.style = "position: relative;";
         }
 
         function take_canvas() {
@@ -161,11 +143,56 @@
             //     });
             // }
             var rectlen = video.videoWidth;
+
+            origin_canvas.width = rectlen;
+            origin_canvas.height = rectlen;
+            origin_canvas.getContext('2d').drawImage(video, 50, 50, 300, 300, 0, 0, 400, 400);
             canvas_show.width = rectlen;
             canvas_show.height = rectlen;
-            canvas_show.getContext('2d').drawImage(video, 0, 0, rectlen, rectlen);
+            canvas_show.getContext('2d').drawImage(origin_canvas, 0, 0, 400, 400);
             video.style = "visibility:hidden;height:0px;width:0px;";
             canvas_show.style = "";
+            videodiv.style = "visibility:hidden;height:0px;width:0px;";
+            var h = parseInt(horizontal_slider.value);
+            var v = parseInt(vertial_slider.value);
+            var s = 300 - parseInt(size_slider.value);
+            draw_greenbox(h, s, v);
+        }
+
+        const horizontal_slider = document.getElementById("horizontal_slider");
+        const vertial_slider = document.getElementById("vertial_slider");
+        const size_slider = document.getElementById("size_slider");
+        const fill_drug_canvas = document.getElementById("fill_drug_canvas");
+        horizontal_slider.oninput = function () {
+            var h = parseInt(this.value);
+            var v = parseInt(vertial_slider.value);
+            var s = 300 - parseInt(size_slider.value);
+            draw_greenbox(h, s, v);
+        }
+        vertial_slider.oninput = function () {
+            var h = parseInt(horizontal_slider.value);
+            var v = parseInt(this.value);
+            var s = 300 - parseInt(size_slider.value);
+            draw_greenbox(h, s, v);
+        }
+        size_slider.oninput = function () {
+            var h = parseInt(horizontal_slider.value);
+            var v = parseInt(vertial_slider.value);
+            var s = 300 - parseInt(this.value);
+            draw_greenbox(h, s, v);
+        }
+        function draw_greenbox(h, s, v) {
+            const show_ctx = canvas_show.getContext('2d');
+            show_ctx.drawImage(origin_canvas, 0, 0, 400, 400);
+            show_ctx.beginPath();
+            show_ctx.rect(h - s / 2, v - s / 2, s, s);
+            show_ctx.strokeStyle = "rgb(0,255,0)";
+            show_ctx.lineWidth = 3;
+            show_ctx.stroke();
+            fill_drug_canvas.style = "";
+            fill_drug_canvas.width = 400;
+            fill_drug_canvas.height = 400;
+            fill_drug_canvas.getContext('2d').drawImage(origin_canvas, h - s / 2, v - s / 2, s, s, 0, 0, 400, 400);
         }
 
         function getPosition(element) {
@@ -180,14 +207,15 @@
             return { x: x, y: y };
         }
         const canvas_show = document.getElementById('demo_canvas');
-        canvas_show.style = "visibility:hidden;height:0px;width:0px;";
-        canvas_show.addEventListener('touchmove', function (e) {
+        const origin_canvas = document.getElementById("origin_canvas");
+        // canvas_show.style = "visibility:hidden;height:0px;width:0px;";
+        fill_drug_canvas.addEventListener('touchmove', function (e) {
             e.preventDefault(); //阻止下拉滑動效果
         }, { passive: false });
-        const context = canvas_show.getContext('2d');
+        const context = fill_drug_canvas.getContext('2d');
         var using = false;
         var eraserEnabled = false;
-        canvas_show.ontouchstart = function (a) {
+        fill_drug_canvas.ontouchstart = function (a) {
             var x = a.touches[0].clientX;
             var y = a.touches[0].clientY;
             using = true;
@@ -198,7 +226,7 @@
                 lastPoint = { x: x, y: y }
             }
         }
-        canvas_show.ontouchmove = function (a) {
+        fill_drug_canvas.ontouchmove = function (a) {
             var x = a.touches[0].clientX;
             var y = a.touches[0].clientY;
             if (!using) { return }
@@ -207,14 +235,14 @@
             }
             else {
                 var newPoint = { "x": x, "y": y };
-                var canvas_y = parseInt(getPosition(canvas_show).y);
+                var canvas_y = parseInt(getPosition(fill_drug_canvas).y);
                 var scrollTop = document.documentElement.scrollTop || window.pageYOffset || document.body.scrollTop;
                 // alert("last_y" + lastPoint.y + ", canvas_y" + canvas_y + ", scroll" + scrollTop);
                 drawLine(lastPoint.x, parseInt(lastPoint.y) - canvas_y + scrollTop, newPoint.x, parseInt(newPoint.y) - canvas_y + scrollTop);
                 lastPoint = newPoint;
             }
         }
-        canvas_show.ontouchhend = function (a) {
+        fill_drug_canvas.ontouchhend = function (a) {
             using = false;
         }
         function drawLine(x1, y1, x2, y2) {
@@ -222,12 +250,148 @@
             // context.moveTo(x1, y1);//其實座標
             // context.lineTo(x2, y2);//結束座標
             context.lineWidth = 10;//預設線條粗細
-            context.arc(x1, y1, 30, 0, 2 * Math.PI, false);
+            context.arc(x1, y1, pen_R, 0, 2 * Math.PI, false);
             context.fill();
             context.closePath();//結束筆觸，路徑結束
         }
 
-        function search() {
+        const pen_size_slider = document.getElementById("pen_size_slider");
+        const pensize_canvas = document.getElementById("pensize");
+        pensize_canvas.width = 60;
+        pensize_canvas.height = 60;
+        var pen_R = 15;
+        var ctx = pensize_canvas.getContext('2d');
+        ctx.fillStyle = "white";
+        ctx.fillRect(0, 0, 60, 60);
+        ctx.beginPath();
+        ctx.arc(30, 30, pen_R, 0, 2 * Math.PI);
+        ctx.fillStyle = "black";
+        ctx.fill();
+        pen_size_slider.oninput = function () {
+            pen_R = 30 - parseInt(this.value);
+            var ctx = pensize_canvas.getContext('2d');
+            ctx.fillStyle = "white";
+            ctx.fillRect(0, 0, 60, 60);
+            ctx.beginPath();
+            ctx.arc(30, 30, pen_R, 0, 2 * Math.PI);
+            ctx.fillStyle = "rgb(0,0,0)";
+            ctx.fill();
+        }
+
+        function redraw() {
+            var h = parseInt(horizontal_slider.value);
+            var v = parseInt(vertial_slider.value);
+            var s = 300 - parseInt(size_slider.value);
+            draw_greenbox(h, s, v);
+        }
+
+        async function search() {
+            color_bar_ctx.fillStyle = grd;
+            color_bar_ctx.fillRect(0, 0, color_bar_width, color_bar_height);
+            var h = parseInt(horizontal_slider.value);
+            var v = parseInt(vertial_slider.value);
+            var s = 300 - parseInt(size_slider.value);
+            var area = 25 * (s * s) / (400 * 400);
+            var ctx = fill_drug_canvas.getContext('2d');
+            var imgData = ctx.getImageData(0, 0, 400, 400).data;
+            const get_rgb_canvas = document.getElementById("get_rgb_canvas");
+            get_rgb_canvas.width = 400;
+            get_rgb_canvas.height = 400;
+            get_rgb_canvas.getContext('2d').drawImage(origin_canvas, h - s / 2, v - s / 2, s, s, 0, 0, 400, 400);
+            var rgb_imgData = get_rgb_canvas.getContext('2d').getImageData(0, 0, 400, 400).data;
+            var black_count = 0;
+            var canvas_pixel = parseInt(imgData.length / 4);
+            var r_array = new Array();
+            var g_array = new Array();
+            var b_array = new Array();
+            var xy_array = new Array();
+            for (i = 0; i < imgData.length / 4; i++) {
+                if (imgData[4 * i] == 0 && imgData[4 * i + 1] == 0 && imgData[4 * i + 2] == 0) {
+                    black_count += 1;
+                    r_array.push(rgb_imgData[4 * i]);
+                    g_array.push(rgb_imgData[4 * i + 1]);
+                    b_array.push(rgb_imgData[4 * i + 2]);
+                    // xy_array.push([Math.floor(i / 400), i % 400]);
+                }
+            }
+            area *= eval(black_count / canvas_pixel);
+            area = area.toFixed(3)
+            const drug_data = document.getElementById("drug_data");
+            drug_data.innerHTML = "";
+            drug_data.innerHTML += "藥品面積:" + area + "cm<sup>2</sup><br>";
+            // drug_data.innerHTML += "紅" + r_array.reduce((a, b) => a + b, 0) / black_count + "<br>";
+            var hue_array = new Array();
+            var saturation_array = new Array();
+            for (i = 0; i < black_count; i++) {
+                var r = parseInt(r_array[i]);
+                var g = parseInt(g_array[i]);
+                var b = parseInt(b_array[i]);
+                var max = parseInt(Math.max(r, g, b));
+                var min = parseInt(Math.min(r, g, b));
+                var avg = parseFloat((r + g + b) / 3);
+                var saturation = Math.pow((Math.pow((r - avg), 2) + Math.pow((g - avg), 2) + Math.pow((b - avg), 2)) / 3, 0.5);
+                var hue = parseInt(0);
+                // alert("r" + r + ", g" + g + ", b" + b + ", max" + max + ", min" + min + ", avg" + avg);
+                if (max != min) {
+                    if (g > b) {
+                        hue = (max - r + g - min + b - min) / (max - min) * 60;
+                    } else {
+                        hue = 360 - (max - r + g - min + b - min) / (max - min) * 60;
+                    }
+                }
+                if (hue != 0) {
+                    hue = hue.toFixed(0);
+                    if (hue >= 360) hue = 359
+                    hue_array.push(hue);
+                    saturation_array.push(saturation.toFixed(3));
+                }
+            }
+            var hue360_array = new Array();
+            var hue360count_array = new Array();
+            for (i = 0; i < 360; i++) {
+                hue360_array.push(0);
+                hue360count_array.push(0);
+            }
+            for (i = 0; i < hue_array.length; i++) {
+                hue360_array[hue_array[i]] = parseFloat(hue360_array[hue_array[i]]) + parseFloat(saturation_array[i]);
+                hue360count_array[hue_array[i]] = parseInt(hue360count_array[hue_array[i]]) + 1;
+            }
+            color_bar_ctx.beginPath();
+            color_bar_ctx.moveTo(0, 30);
+            for (i = 0; i < 360; i++) {
+                if (hue360count_array[i] != 0) hue360_array[i] /= hue360count_array[i];
+                // drug_data.innerHTML += i + ": " + hue360_array[i] + "<br>";
+                color_bar_ctx.lineTo(i, parseInt((130 - parseInt(hue360_array[i])) / 130 * 30));
+            }
+            color_bar_ctx.lineWidth = 3;
+            color_bar_ctx.stroke();
+
+            //計算相似
+            block = 6;
+            xy_len = xy_array.length - (xy_array.length % block);
+            var arr = tf.split(tf.topk(tf.pow(tf.sum(tf.squaredDifference(xy_array, tf.mean(x, 0)), 1), tf.scalar(0.5)), xy_len).values, block, 0);
+            const max_s = tf.mean(arr[0], 0);
+            for (i = 1; i < block; i++) {
+                drug_data.innerHTML += await "shape" + i + ": " + tf.div(tf.mean(arr[i], 0), max_s).data() + "<br>";
+            }
+
+            const calc_count = 12;
+            var tf_area = tf.tensor1d(area_array);
+            var tf_user_area = tf.tensor1d([parseFloat(area)]);
+            tf_area = tf.mul(tf.abs(tf_user_area.sub(tf_area)), tf.scalar(100));
+            drug_data.innerHTML += "面積均差: " + tf.mean(tf_area) + "<br>";
+            var tf_power = tf.tensor2d(class_power_array);
+            tf_power = tf.abs(tf_power.sub(hue360_array));
+
+            drug_data.innerHTML += "色均差: " + tf.mean(tf_power.sum(1)) + "<br>";
+            var { values, indices } = tf.topk(tf.scalar(0).sub(tf.add(tf_area, tf_power.sum(1))), calc_count);
+
+            //比對特徵
+            rank = await indices.data();
+            var user_proper = document.getElementById("user_proper").value.toLowerCase();
+            var rank_score = new Array();
+
+            //搜尋結果
             var ul = document.getElementById("show_pred");
             for (i = 0; i < rank.length; i++) {
                 if (document.getElementById("top" + i)) {
@@ -236,9 +400,99 @@
                 }
                 var li = document.createElement("li");
                 li.setAttribute("id", "top" + i);
+                // li.setAttribute("style", "display:inline;");
                 ul.appendChild(li);
-                document.getElementById("top" + i).innerHTML = "<img src='drug_pic64x64/" + class_name_dict[rank[i]] + "'>" + class_name_dict[rank[i]];
+                var fn = class_filename_dict[rank[i]];
+                var tar_proper = filename_proper_dict[fn];
+                appendHTML(i, fn);
+                //唯一
+                // if (user_proper == "") {
+                //     if (tar_proper == "") {
+                //         appendHTML(i, fn);
+                //     }
+                // } else {
+                //     var score = 0;
+                //     for (j = 0; j < user_proper.length; j++) {
+                //         for (k = 0; k < tar_proper.length; k++) {
+                //             if (user_proper.substr(j, 1) == tar_proper.substr(k, 1)) {
+                //                 score += 1;
+                //                 if (score == user_proper.length) {
+                //                     appendHTML(i, fn);
+                //                     break;
+                //                 }
+                //             }
+                //         }
+                //     }
+                // }
+                //容錯
+                // if (user_proper == "") {
+                //     if (tar_proper == "") {
+                //         rank_score.push(0);
+                //     } else if (tar_proper.length == 1) {
+                //         rank_score.push(1);
+                //     } else {
+                //         rank_score.push(2);
+                //     }
+                // } else {
+                //     var score = 0;
+                //     var rank_class = 2;
+                //     for (j = 0; j < user_proper.length; j++) {
+                //         for (k = 0; k < tar_proper.length; k++) {
+                //             if (user_proper.substr(j, 1) == tar_proper.substr(k, 1)) {
+                //                 score += 1;
+                //                 if (score == (user_proper.length - 1) && score >= 1) rank_class = 1;
+                //                 if (score == user_proper.length) rank_class = 0;
+                //             }
+                //         }
+                //     }
+                //     rank_score.push(rank_class);
+                // }
             }
+            // var max_score = Math.max.apply(null, rank_score);
+            // var append_count = 0;
+            // for (j = 0; j <= max_score; j++) {
+            //     for (i = 0; i < rank.length; i++) {
+            //         var fn = class_filename_dict[rank[i]];
+            //         if (rank_score[i] == j) {
+            //             appendHTML(append_count, fn);
+            //             append_count += 1;
+            //         }
+            //     }
+            // }
+            document.getElementById('property').scrollIntoView();
+        }
+
+        function appendHTML(i, fn) {
+            document.getElementById("top" + i).innerHTML += "<img src='pic_64x64/" + fn + "'><b>特徵: </b>" + filename_proper_dict[fn] + "<br>";
+            document.getElementById("top" + i).innerHTML += "<b>TFDA:</b> " + filename_tfda_dict[fn] + "<br>";
+            document.getElementById("top" + i).innerHTML += "<b>商品名:</b> " + filename_brand_dict[fn] + "<br>";
+            document.getElementById("top" + i).innerHTML += "<b>中文名:</b> " + filename_chinese_dict[fn] + "<br>";
+            document.getElementById("top" + i).innerHTML += "<b>主成分:</b> " + filename_ingredient_dict[fn];
+        }
+
+        var color_bar = document.getElementById("color_bar");
+        var color_bar_ctx = color_bar.getContext("2d");
+        var color_bar_width = 360;
+        var color_bar_height = 30;
+        // 建立線型漸層物件 參數依序為 x0(x起始點)、y0(y起始點)、x1(x結束點)、y1(y結束點)
+        var grd = color_bar_ctx.createLinearGradient(0, 0, color_bar_width, color_bar_height);
+        // 設定顏色位置 參數依序為 position(0.0 到 1.0，0 即為起始點，1 即為結束點)、顏色代碼
+        grd.addColorStop(0, "rgb(255,0,0)");
+        grd.addColorStop(0.08, "rgb(255,128,0)");
+        grd.addColorStop(0.17, "rgb(255,255,0)");
+        grd.addColorStop(0.25, "rgb(128,255,0)");
+        grd.addColorStop(0.33, "rgb(0,255,0)");
+        grd.addColorStop(0.42, "rgb(0,255,128)");
+        grd.addColorStop(0.5, "rgb(0,255,255)");
+        grd.addColorStop(0.58, "rgb(0,128,255)");
+        grd.addColorStop(0.67, "rgb(0,0,255)");
+        grd.addColorStop(0.75, "rgb(128,0,255)");
+        grd.addColorStop(0.83, "rgb(255,0,255)");
+        grd.addColorStop(1, "rgb(255,0,128)");
+        var area_array = new Array();
+        for (i = 0; i < class_power_array.length; i++) {
+            var fn = class_filename_dict[i];
+            area_array.push(filename_area_dict[fn]);
         }
     </script>
 </body>
