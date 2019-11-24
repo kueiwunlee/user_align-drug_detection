@@ -373,12 +373,10 @@
             const max_s = tf.mean(arr[0], 0);
             var shape_array = new Array();
             for (i = 1; i < block; i++) {
-                var tar_vec = await tf.div(tf.mean(arr[i], 0), max_s).data();
-                shape_array.push(tar_vec.toFixed(3));
+                shape_array.push(await tf.div(tf.mean(arr[i], 0), max_s).data());
             }
-            alert(shape_array);
             for (i = 0; i < shape_array.length; i++) {
-                drug_data.innerHTML += "shape" + i + ": " + shape_array[i] + "<br>";
+                drug_data.innerHTML += "shape" + i + ": " + shape_array[i].toFixed(3) + "<br>";
             }
 
             const calc_count = 12;
