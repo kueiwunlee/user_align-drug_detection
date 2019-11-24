@@ -375,7 +375,7 @@
             for (i = 1; i < block; i++) {
                 var shape_vec = await tf.div(tf.mean(arr[i], 0), max_s).data();
                 shape_vec = parseFloat(shape_vec).toFixed(3);
-                drug_data.innerHTML += "shape" + i + ": " + shape_vec + ", arr" + arr[i] + ", max" + max_s + "<br>";
+                drug_data.innerHTML += "shape" + i + ": " + shape_vec + ", arr" + tf.mean(arr[i], 0) + ", max" + max_s + "<br>";
                 shape_array.push(shape_vec);
             }
 
