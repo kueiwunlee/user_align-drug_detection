@@ -311,7 +311,7 @@
                     r_array.push(rgb_imgData[4 * i]);
                     g_array.push(rgb_imgData[4 * i + 1]);
                     b_array.push(rgb_imgData[4 * i + 2]);
-                    // xy_array.push([Math.floor(i / 400), i % 400]);
+                    xy_array.push([Math.floor(i / 400), i % 400]);
                 }
             }
             area *= eval(black_count / canvas_pixel);
@@ -369,13 +369,12 @@
             //計算相似
             block = 6;
             xy_len = xy_array.length - (xy_array.length % block);
-            alert(xy_array.length);
             var arr = tf.split(tf.topk(tf.pow(tf.sum(tf.squaredDifference(xy_array, tf.mean(x, 0)), 1), tf.scalar(0.5)), xy_len).values, block, 0);
             const max_s = tf.mean(arr[0], 0);
             alert(max_s);
-            // for (i = 1; i < block; i++) {
-            //     drug_data.innerHTML += await "shape" + i + ": " + tf.div(tf.mean(arr[i], 0), max_s).data() + "<br>";
-            // }
+            for (i = 1; i < block; i++) {
+                drug_data.innerHTML += await "shape" + i + ": " + tf.div(tf.mean(arr[i], 0), max_s).data() + "<br>";
+            }
 
             const calc_count = 12;
             var tf_area = tf.tensor1d(area_array);
