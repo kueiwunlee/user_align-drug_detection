@@ -377,7 +377,7 @@
             }
             alert(shape_array);
             for (i = 0; i < shape_array.length; i++) {
-                drug_data.innerHTML += "shape" + i + ": " + shape_array[i].toFixed(3) + "<br>";
+                drug_data.innerHTML += "shape" + i + ": " + parseFloat(shape_array[i]).toFixed(3) + "<br>";
             }
 
             const calc_count = 12;
