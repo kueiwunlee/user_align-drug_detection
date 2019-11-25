@@ -382,8 +382,8 @@
             s2 = await s2.data();
             tf.util.shuffle(s1);
             tf.util.shuffle(s2);
-            s1_len = parseInt(s1.length / 3);
-            s2_len = parseInt(s2.length / 3);
+            s1_len = parseInt(s1.length / 5);
+            s2_len = parseInt(s2.length / 5);
             s1 = tf.tensor1d(s1).slice(0, s1_len);
             s2 = tf.tensor1d(s2).slice(0, s2_len);
             var arr = s1.concat(s2);
