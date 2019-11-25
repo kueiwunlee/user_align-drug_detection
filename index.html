@@ -375,17 +375,17 @@
             xy_len = x_array.length - (x_array.length % block);
             x_array = tf.tensor1d(x_array);
             y_array = tf.tensor1d(y_array);
-            var angle_class = 100;
+            var angle_class = 36;
             alert(tf.add(tf.mul(tf.atan(tf.div(tf.sub(x_array, tf.mean(x_array, 0)), tf.sub(y_array, tf.mean(y_array, 0)))), tf.scalar(180 / Math.PI)), tf.scalar(90)).div(180).mul(angle_class).toInt().oneHot(angle_class).sum(0).topk(angle_class).values);
-            var arr = await tf.split(tf.add(tf.mul(tf.atan(tf.div(tf.sub(x_array, tf.mean(x_array, 0)), tf.sub(y_array, tf.mean(y_array, 0)))), tf.scalar(180 / Math.PI)), tf.scalar(90)).toInt().oneHot(180).sum(0).topk(180).values, block, 0);
-            const max_s = tf.mean(arr[0], 0);
-            var shape_array = new Array();
-            for (i = 1; i < block; i++) {
-                var shape_vec = await tf.div(tf.mean(arr[i], 0), max_s).data();
-                shape_vec = parseFloat(shape_vec).toFixed(3);
-                drug_data.innerHTML += "shape" + i + ": " + shape_vec + "<br>";
-                shape_array.push(shape_vec);
-            }
+            // var arr = await tf.split(tf.add(tf.mul(tf.atan(tf.div(tf.sub(x_array, tf.mean(x_array, 0)), tf.sub(y_array, tf.mean(y_array, 0)))), tf.scalar(180 / Math.PI)), tf.scalar(90)).toInt().oneHot(180).sum(0).topk(180).values, block, 0);
+            // const max_s = tf.mean(arr[0], 0);
+            // var shape_array = new Array();
+            // for (i = 1; i < block; i++) {
+            //     var shape_vec = await tf.div(tf.mean(arr[i], 0), max_s).data();
+            //     shape_vec = parseFloat(shape_vec).toFixed(3);
+            //     drug_data.innerHTML += "shape" + i + ": " + shape_vec + "<br>";
+            //     shape_array.push(shape_vec);
+            // }
 
             const calc_count = 12;
             var tf_area = tf.tensor1d(area_array);
