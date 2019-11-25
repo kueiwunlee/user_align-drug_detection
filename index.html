@@ -377,8 +377,7 @@
             y_array = tf.tensor1d(y_array);
             var angle_class = 36;
             var arr = await tf.add(tf.mul(tf.atan(tf.div(tf.sub(x_array, tf.mean(x_array, 0)), tf.sub(y_array, tf.mean(y_array, 0)))), tf.scalar(180 / Math.PI)), tf.scalar(90)).div(180).mul(angle_class).toInt().data();
-            await tf.util.shuffle(arr);
-            // arr = arr.slice(0, 10000);
+            arr = shuffle(arr);
             alert(arr);
             var arr = await tf.split(tf.tensor1d(arr).oneHot(angle_class).sum(0).topk(angle_class).values, block, 0);
             const max_s = tf.mean(arr[0], 0);
@@ -475,6 +474,16 @@
             //     }
             // }
             document.getElementById('property').scrollIntoView();
+        }
+        function shuffle(a) {
+            var j, x, i;
+            for (i = a.length - 1; i > 0; i--) {
+                j = Math.floor(Math.random() * (i + 1));
+                x = a[i];
+                a[i] = a[j];
+                a[j] = x;
+            }
+            return a;
         }
 
         function appendHTML(i, fn) {
