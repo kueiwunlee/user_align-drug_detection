@@ -421,7 +421,7 @@
             tf_power = tf.abs(tf_power.sub(hue360_array));
 
             drug_data.innerHTML += "色均差: " + tf.mean(tf_power.sum(1)) + "<br>";
-            var { values, indices } = tf.topk(tf.scalar(0).sub(tf.add(tf_area, tf_power.sum(1))), calc_count);
+            var { values, indices } = tf.topk(tf.scalar(0).sub(tf.add(tf_area, tf_power.sum(1)).add(tf_shape.sun(1))), calc_count);
 
             //比對特徵
             rank = await indices.data();
@@ -544,6 +544,7 @@
             shape_array.push(filename_shape_dict[fn]);
         }
         tf.setBackend('webgl');
+        alert("over");
     </script>
 </body>
 
