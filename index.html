@@ -404,13 +404,13 @@
                 var shape_vec = await tf.div(tf.mean(arr[i], 0), max_s).data();
                 shape_vec = parseFloat(shape_vec).toFixed(3);
                 drug_data.innerHTML += "shape" + i + ": " + shape_vec + "<br>";
-                user_shape_array.push(shape_vec);
+                user_shape_array.push(parseFloat(shape_vec));
             }
             //shape_array
-            var tf_shape = tf.tensor1d(shape_array);
+            var tf_shape = tf.tensor2d(shape_array);
             var tf_user_shape = tf.tensor1d(user_shape_array);
-            tf_shape = tf.mul(tf.abs(tf_user_shape.sub(tf_shape)), tf.scalar(1));
-            drug_data.innerHTML += "形均差: " + tf.mean(tf_shape.sun(1)) + "<br>";
+            tf_shape = tf.mul(tf.abs(tf_user_shape.sub(tf_shape)), tf.scalar(100));
+            drug_data.innerHTML += "形均差: " + tf.mean(tf_shape.sum(1)) + "<br>";
 
             const calc_count = 12;
             var tf_area = tf.tensor1d(area_array);
@@ -421,8 +421,8 @@
             tf_power = tf.abs(tf_power.sub(hue360_array));
 
             drug_data.innerHTML += "色均差: " + tf.mean(tf_power.sum(1)) + "<br>";
-            var { values, indices } = tf.topk(tf.scalar(0).sub(tf.add(tf_area, tf_power.sum(1)).add(tf_shape.sun(1))), calc_count);
-
+            var { values, indices } = tf.topk(tf.scalar(0).sub(tf.add(tf_area, tf_power.sum(1)).add(tf_shape.sum(1))), calc_count);
+            
             //比對特徵
             rank = await indices.data();
             var user_proper = document.getElementById("user_proper").value.toLowerCase();
@@ -544,7 +544,6 @@
             shape_array.push(filename_shape_dict[fn]);
         }
         tf.setBackend('webgl');
-        alert("over");
     </script>
 </body>
 
