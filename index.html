@@ -382,8 +382,8 @@
             s2 = await s2.data();
             tf.util.shuffle(s1);
             tf.util.shuffle(s2);
-            s1 = tf.tensor1d(s1).slice(0, s1.length / 2);
-            s2 = tf.tensor1d(s2).slice(0, s2.length / 2);
+            s1 = tf.tensor1d(s1).slice(0, (s1.length / 2).toFixed(0));
+            s2 = tf.tensor1d(s2).slice(0, (s2.length / 2).toFixed(0));
             var arr = s1.concat(s2);
             alert("concat3: " + arr);
             xy_len = arr.length - (arr.length % block);
