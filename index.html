@@ -380,12 +380,12 @@
             var [s1, s2] = await tf.split(tf.add(tf.mul(tf.atan(tf.div(tf.sub(x_array, tf.mean(x_array, 0)), tf.sub(y_array, tf.mean(y_array, 0)))), tf.scalar(180 / Math.PI)), tf.scalar(90)).div(180).mul(angle_class).toInt().slice(0, xy_len), 2, 0);
             s1 = await s1.data();
             s2 = await s2.data();
-            tf.util.shuffle(s1);
-            tf.util.shuffle(s2);
+            await tf.util.shuffle(s1);
+            await tf.util.shuffle(s2);
             s1 = await tf.tensor1d(s1).slice(0, s1.length / 2);
             s2 = await tf.tensor1d(s2).slice(0, s2.length / 2);
             var arr = await s1.concat(s2);
-            alert("concat6: " + arr);
+            alert("concat7: " + arr);
             xy_len = arr.length - (arr.length % block);
             var arr = await tf.split(arr.slice(0, xy_len).oneHot(angle_class).sum(0).topk(angle_class).values, block, 0);
             const max_s = tf.mean(arr[0], 0);
