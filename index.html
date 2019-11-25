@@ -304,7 +304,7 @@
             var r_array = new Array();
             var g_array = new Array();
             var b_array = new Array();
-            var xy_array = new Array();
+            // var xy_array = new Array();
             var x_array = new Array();
             var y_array = new Array();
             for (i = 0; i < imgData.length / 4; i++) {
@@ -313,7 +313,7 @@
                     r_array.push(rgb_imgData[4 * i]);
                     g_array.push(rgb_imgData[4 * i + 1]);
                     b_array.push(rgb_imgData[4 * i + 2]);
-                    xy_array.push([Math.floor(i / 400) / 100, (i % 400) / 100]);
+                    // xy_array.push([Math.floor(i / 400) / 100, (i % 400) / 100]);
                     x_array.push(Math.floor(i / 400));
                     y_array.push((i % 400));
                 }
@@ -372,11 +372,10 @@
 
             //計算相似
             block = 6;
-            xy_len = xy_array.length - (xy_array.length % block);
+            xy_len = x_array.length - (x_array.length % block);
             x_array = tf.tensor1d(x_array);
             y_array = tf.tensor1d(y_array);
-            alert(tf.add(tf.mul(tf.atan(tf.div(tf.sub(x_array, tf.mean(x_array, 0)), tf.sub(y_array, tf.mean(y_array, 0)))), tf.scalar(180 / Math.PI)), tf.scalar(90)).toInt().oneHot(180).sum(0).topk(180).values);
-            var arr = await tf.split(tf.topk(tf.pow(tf.sum(tf.squaredDifference(xy_array, tf.mean(xy_array, 0)), 1), tf.scalar(0.5)), xy_len).values, block, 0);
+            var arr = await tf.split(tf.add(tf.mul(tf.atan(tf.div(tf.sub(x_array, tf.mean(x_array, 0)), tf.sub(y_array, tf.mean(y_array, 0)))), tf.scalar(180 / Math.PI)), tf.scalar(90)).toInt().oneHot(180).sum(0).topk(180).values, block, 0);
             const max_s = tf.mean(arr[0], 0);
             var shape_array = new Array();
             for (i = 1; i < block; i++) {
