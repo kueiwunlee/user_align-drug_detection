@@ -377,7 +377,7 @@
             y_array = tf.tensor1d(y_array);
             var angle_class = 36;
             // alert(tf.add(tf.mul(tf.atan(tf.div(tf.sub(x_array, tf.mean(x_array, 0)), tf.sub(y_array, tf.mean(y_array, 0)))), tf.scalar(180 / Math.PI)), tf.scalar(90)).div(180).mul(angle_class).toInt().oneHot(angle_class).sum(0).topk(angle_class).values);
-            var arr = await tf.split(tf.util.shuffle(tf.add(tf.mul(tf.atan(tf.div(tf.sub(x_array, tf.mean(x_array, 0)), tf.sub(y_array, tf.mean(y_array, 0)))), tf.scalar(180 / Math.PI)), tf.scalar(90)).div(180).mul(angle_class).toInt()).slice(0,10000).oneHot(angle_class).sum(0).topk(angle_class).values, block, 0);
+            var arr = await tf.split(tf.add(tf.mul(tf.atan(tf.div(tf.sub(x_array, tf.mean(x_array, 0)), tf.sub(y_array, tf.mean(y_array, 0)))), tf.scalar(180 / Math.PI)), tf.scalar(90)).div(180).mul(angle_class).toInt().oneHot(angle_class).sum(0).topk(angle_class).values, block, 0);
             const max_s = tf.mean(arr[0], 0);
             var shape_array = new Array();
             for (i = 1; i < block; i++) {
