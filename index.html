@@ -305,6 +305,8 @@
             var g_array = new Array();
             var b_array = new Array();
             var xy_array = new Array();
+            var x_array = new Array();
+            var y_array = new Array();
             for (i = 0; i < imgData.length / 4; i++) {
                 if (imgData[4 * i] == 0 && imgData[4 * i + 1] == 0 && imgData[4 * i + 2] == 0) {
                     black_count += 1;
@@ -312,6 +314,8 @@
                     g_array.push(rgb_imgData[4 * i + 1]);
                     b_array.push(rgb_imgData[4 * i + 2]);
                     xy_array.push([Math.floor(i / 400) / 100, (i % 400) / 100]);
+                    x_array.push(Math.floor(i / 400));
+                    y_array.push((i % 400));
                 }
             }
             area *= eval(black_count / canvas_pixel);
@@ -369,6 +373,7 @@
             //計算相似
             block = 6;
             xy_len = xy_array.length - (xy_array.length % block);
+            alert(tf.mul(tf.atan(tf.div(tf.tensor1d(x_array), tf.tensor1d(y_array))), tf.scalar(180 / Math.PI)));
             var arr = await tf.split(tf.topk(tf.pow(tf.sum(tf.squaredDifference(xy_array, tf.mean(xy_array, 0)), 1), tf.scalar(0.5)), xy_len).values, block, 0);
             const max_s = tf.mean(arr[0], 0);
             var shape_array = new Array();
