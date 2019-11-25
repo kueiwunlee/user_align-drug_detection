@@ -297,7 +297,9 @@
             var shape_canvas = document.createElement("canvas");
             shape_canvas.width = 200;
             shape_canvas.height = 200;
-            var shape_imgData = shape_canvas.getContext('2d').drawImage(fill_drug_canvas, 0, 0, 400, 400, 0, 0, 200, 200).getImageData(0, 0, 200, 200).data;
+            shape_canvas.getContext('2d').drawImage(fill_drug_canvas, 0, 0, 400, 400, 0, 0, 200, 200);
+            var shape_imgData = shape_canvas.getContext('2d').getImageData(0, 0, 200, 200).data;
+            alert(shape_imgData);
             var x_array = new Array();
             var y_array = new Array();
             for (i = 0; i < shape_imgData.length / 4; i++) {
