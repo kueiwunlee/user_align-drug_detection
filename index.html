@@ -375,6 +375,7 @@
             xy_len = x_array.length - (x_array.length % block);
             x_array = tf.tensor1d(x_array);
             y_array = tf.tensor1d(y_array);
+            alert(tf.add(tf.mul(tf.atan(tf.div(tf.sub(x_array, tf.mean(x_array, 0)), tf.sub(y_array, tf.mean(y_array, 0)))), tf.scalar(180 / Math.PI)), tf.scalar(90)).toInt());
             var arr = await tf.split(tf.add(tf.mul(tf.atan(tf.div(tf.sub(x_array, tf.mean(x_array, 0)), tf.sub(y_array, tf.mean(y_array, 0)))), tf.scalar(180 / Math.PI)), tf.scalar(90)).toInt().oneHot(180).sum(0).topk(180).values, block, 0);
             const max_s = tf.mean(arr[0], 0);
             var shape_array = new Array();
