@@ -387,7 +387,7 @@
             s1 = tf.tensor1d(s1).slice(0, s1_len);
             s2 = tf.tensor1d(s2).slice(0, s2_len);
             var arr = s1.concat(s2);
-            xy_len = arr.length - parseInt(arr.length % block);
+            xy_len = (s1_len + s2_len) - parseInt((s1_len + s2_len) % block);
             var arr = arr.slice(0, xy_len);
             alert("concat6: " + arr);
             var arr = await tf.split(arr.oneHot(angle_class).sum(0).topk(angle_class).values, block, 0);
