@@ -373,7 +373,7 @@
             //計算相似
             block = 6;
             xy_len = xy_array.length - (xy_array.length % block);
-            alert(tf.mul(tf.atan(tf.div(tf.tensor1d(x_array), tf.tensor1d(y_array))), tf.scalar(180 / Math.PI)));
+            alert(tf.mul(tf.atan(tf.div(tf.tensor1d(x_array), tf.tensor1d(y_array))), tf.scalar(180 / Math.PI)).toInt());
             var arr = await tf.split(tf.topk(tf.pow(tf.sum(tf.squaredDifference(xy_array, tf.mean(xy_array, 0)), 1), tf.scalar(0.5)), xy_len).values, block, 0);
             const max_s = tf.mean(arr[0], 0);
             var shape_array = new Array();
