@@ -294,6 +294,18 @@
             var area = 25 * (s * s) / (400 * 400);
             var ctx = fill_drug_canvas.getContext('2d');
             var imgData = ctx.getImageData(0, 0, 400, 400).data;
+            var shape_canvas = document.createElement("canvas");
+            shape_canvas.width = 200;
+            shape_canvas.height = 200;
+            var shape_imgData = shape_canvas.getContext('2d').drawImage(fill_drug_canvas, 0, 0, 400, 400, 0, 0, 200, 200).getImageData(0, 0, 200, 200).data;
+            var x_array = new Array();
+            var y_array = new Array();
+            for (i = 0; i < shape_imgData.length / 4; i++) {
+                if (shape_imgData[4 * i] == 0 && shape_imgData[4 * i + 1] == 0 && shape_imgData[4 * i + 2] == 0) {
+                    x_array.push(Math.floor(i / 200));
+                    y_array.push((i % 200));
+                }
+            }
             const get_rgb_canvas = document.getElementById("get_rgb_canvas");
             get_rgb_canvas.width = 400;
             get_rgb_canvas.height = 400;
@@ -304,18 +316,12 @@
             var r_array = new Array();
             var g_array = new Array();
             var b_array = new Array();
-            // var xy_array = new Array();
-            var x_array = new Array();
-            var y_array = new Array();
             for (i = 0; i < imgData.length / 4; i++) {
                 if (imgData[4 * i] == 0 && imgData[4 * i + 1] == 0 && imgData[4 * i + 2] == 0) {
                     black_count += 1;
                     r_array.push(rgb_imgData[4 * i]);
                     g_array.push(rgb_imgData[4 * i + 1]);
                     b_array.push(rgb_imgData[4 * i + 2]);
-                    // xy_array.push([Math.floor(i / 400) / 100, (i % 400) / 100]);
-                    x_array.push(Math.floor(i / 400));
-                    y_array.push((i % 400));
                 }
             }
             area *= eval(black_count / canvas_pixel);
