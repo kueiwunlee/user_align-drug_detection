@@ -259,7 +259,7 @@
         const pensize_canvas = document.getElementById("pensize");
         pensize_canvas.width = 60;
         pensize_canvas.height = 60;
-        var pen_R = 15;
+        var pen_R = 30;
         var ctx = pensize_canvas.getContext('2d');
         ctx.fillStyle = "white";
         ctx.fillRect(0, 0, 60, 60);
@@ -268,7 +268,7 @@
         ctx.fillStyle = "black";
         ctx.fill();
         pen_size_slider.oninput = function () {
-            pen_R = 30 - parseInt(this.value);
+            pen_R = 50 - parseInt(this.value);
             var ctx = pensize_canvas.getContext('2d');
             ctx.fillStyle = "white";
             ctx.fillRect(0, 0, 60, 60);
