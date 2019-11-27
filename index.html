@@ -59,12 +59,7 @@
 
 <body>
     <h1>藥物辨識</h1>
-    <h3>步驟一:輸入藥上的特徵</h3>
-    <h5>不分英數、大小寫、順序、正反面、刻痕</h5>
-    <div>
-        <input id="user_proper" style="width: 300px;" placeholder="ex: 刻痕(-)、十字刻痕(+)">
-    </div><br>
-    <h3 id="step2">步驟二:綠框對齊5cm*5cm</h3>
+    <h3 id="step2">步驟一:綠框對齊5cm*5cm</h3>
     <div>
         <button onclick="initCameraStream();document.getElementById('step2').scrollIntoView();">開啟鏡頭</button><br>
         <div id="videodiv" style="position: relative;">
@@ -82,7 +77,7 @@
         上<input id="vertial_slider" class="slider" type="range" min="1" max="400" value="200">下<br><br>
         大<input id="size_slider" class="slider" type="range" min="1" max="300" value="150">小<br><br>
         <button onclick="document.getElementById('step3').scrollIntoView();">放大綠色區塊</button><br><br>
-        <h3 id="step3">步驟三:畫滿藥品區域</h3>
+        <h3 id="step3">步驟二:畫滿藥品區域</h3>
         <canvas id="fill_drug_canvas" style="width: 0px; height: 0px;"></canvas><br>
         畫筆大小:<canvas id="pensize" style="width: 60px; height: 60px;"></canvas>
         <button onclick="redraw();document.getElementById('step3').scrollIntoView();">重畫</button><br>
@@ -97,7 +92,12 @@
         <canvas id="color_bar" width="360" height="30"></canvas>
     </div>
     <hr>
-    <h5>搜尋結果:</h5>
+    <h3>搜尋結果:</h3>
+    <h5>輸入藥上的特徵</h5>
+    <h5>不分英數、大小寫、順序、正反面、刻痕</h5>
+    <div>
+        <input id="user_proper" style="width: 300px;" placeholder="ex: 刻痕(-)、十字刻痕(+)、圖形(*)" onblur="pick_drug();">
+    </div><br>
     <ul id="show_pred" style="list-style:none;">
         <li id="top0">尚未搜尋</li>
     </ul>
@@ -330,7 +330,6 @@
             const drug_data = document.getElementById("drug_data");
             drug_data.innerHTML = "";
             drug_data.innerHTML += "藥品面積:" + area + "cm<sup>2</sup><br>";
-            // drug_data.innerHTML += "紅" + r_array.reduce((a, b) => a + b, 0) / black_count + "<br>";
             var hue_array = new Array();
             var saturation_array = new Array();
             for (i = 0; i < black_count; i++) {
@@ -342,7 +341,6 @@
                 var avg = parseFloat((r + g + b) / 3);
                 var saturation = Math.pow((Math.pow((r - avg), 2) + Math.pow((g - avg), 2) + Math.pow((b - avg), 2)) / 3, 0.5);
                 var hue = parseInt(0);
-                // alert("r" + r + ", g" + g + ", b" + b + ", max" + max + ", min" + min + ", avg" + avg);
                 if (max != min) {
                     if (g > b) {
                         hue = (max - r + g - min + b - min) / (max - min) * 60;
@@ -371,7 +369,6 @@
             color_bar_ctx.moveTo(0, 30);
             for (i = 0; i < 360; i++) {
                 if (hue360count_array[i] != 0) hue360_array[i] /= hue360count_array[i];
-                // drug_data.innerHTML += i + ": " + hue360_array[i] + "<br>";
                 color_bar_ctx.lineTo(i, parseInt((130 - parseInt(hue360_array[i])) / 130 * 30));
             }
             color_bar_ctx.lineWidth = 3;
@@ -383,20 +380,7 @@
             x_array = tf.tensor1d(x_array);
             y_array = tf.tensor1d(y_array);
             var angle_class = 36;
-            // alert(tf.add(tf.mul(tf.atan(tf.div(tf.sub(x_array, tf.mean(x_array, 0)), tf.sub(y_array, tf.mean(y_array, 0)))), tf.scalar(180 / Math.PI)), tf.scalar(90)).div(180).mul(angle_class).toInt().slice(0, xy_len));
             var arr = await tf.add(tf.mul(tf.atan(tf.div(tf.sub(x_array, tf.mean(x_array, 0)), tf.sub(y_array, tf.mean(y_array, 0)))), tf.scalar(180 / Math.PI)), tf.scalar(90)).div(180).mul(angle_class).toInt().slice(0, xy_len);
-            // s1 = await s1.data();
-            // s2 = await s2.data();
-            // tf.util.shuffle(s1);
-            // tf.util.shuffle(s2);
-            // s1_len = parseInt(s1.length / 10);
-            // s2_len = parseInt(s2.length / 10);
-            // s1 = tf.tensor1d(s1).slice(0, s1_len);
-            // s2 = tf.tensor1d(s2).slice(0, s2_len);
-            // var arr = s1.concat(s2);
-            // xy_len = (s1_len + s2_len) - parseInt((s1_len + s2_len) % block);
-            // var arr = arr.slice(0, xy_len);
-            // alert("concat7: " + arr);
             var arr = await tf.split(arr.oneHot(angle_class).sum(0).topk(angle_class).values, block, 0);
             const max_s = tf.mean(arr[0], 0);
             var user_shape_array = new Array();
@@ -409,24 +393,23 @@
             //shape_array
             var tf_shape = tf.tensor2d(shape_array);
             var tf_user_shape = tf.tensor1d(user_shape_array);
-            tf_shape = tf.mul(tf.abs(tf_user_shape.sub(tf_shape)), tf.scalar(100));
+            tf_shape = tf.mul(tf.abs(tf_user_shape.sub(tf_shape)), tf.scalar(200));
             drug_data.innerHTML += "形均差: " + tf.mean(tf_shape.sum(1)) + "<br>";
 
-            const calc_count = 12;
+            const calc_count = 10;
             var tf_area = tf.tensor1d(area_array);
             var tf_user_area = tf.tensor1d([parseFloat(area)]);
-            tf_area = tf.mul(tf.abs(tf_user_area.sub(tf_area)), tf.scalar(100));
+            tf_area = tf.mul(tf.abs(tf_user_area.sub(tf_area)), tf.scalar(130));
             drug_data.innerHTML += "面積均差: " + tf.mean(tf_area) + "<br>";
             var tf_power = tf.tensor2d(class_power_array);
             tf_power = tf.abs(tf_power.sub(hue360_array));
 
             drug_data.innerHTML += "色均差: " + tf.mean(tf_power.sum(1)) + "<br>";
             var { values, indices } = tf.topk(tf.scalar(0).sub(tf.add(tf_area, tf_power.sum(1)).add(tf_shape.sum(1))), calc_count);
-            
+
             //比對特徵
             rank = await indices.data();
-            var user_proper = document.getElementById("user_proper").value.toLowerCase();
-            var rank_score = new Array();
+            tar_proper_array = new Array();
 
             //搜尋結果
             var ul = document.getElementById("show_pred");
@@ -437,67 +420,45 @@
                 }
                 var li = document.createElement("li");
                 li.setAttribute("id", "top" + i);
-                // li.setAttribute("style", "display:inline;");
                 ul.appendChild(li);
                 var fn = class_filename_dict[rank[i]];
                 var tar_proper = filename_proper_dict[fn];
+                tar_proper_array.push(tar_proper);
                 appendHTML(i, fn);
-                //唯一
-                // if (user_proper == "") {
-                //     if (tar_proper == "") {
-                //         appendHTML(i, fn);
-                //     }
-                // } else {
-                //     var score = 0;
-                //     for (j = 0; j < user_proper.length; j++) {
-                //         for (k = 0; k < tar_proper.length; k++) {
-                //             if (user_proper.substr(j, 1) == tar_proper.substr(k, 1)) {
-                //                 score += 1;
-                //                 if (score == user_proper.length) {
-                //                     appendHTML(i, fn);
-                //                     break;
-                //                 }
-                //             }
-                //         }
-                //     }
-                // }
-                //容錯
-                // if (user_proper == "") {
-                //     if (tar_proper == "") {
-                //         rank_score.push(0);
-                //     } else if (tar_proper.length == 1) {
-                //         rank_score.push(1);
-                //     } else {
-                //         rank_score.push(2);
-                //     }
-                // } else {
-                //     var score = 0;
-                //     var rank_class = 2;
-                //     for (j = 0; j < user_proper.length; j++) {
-                //         for (k = 0; k < tar_proper.length; k++) {
-                //             if (user_proper.substr(j, 1) == tar_proper.substr(k, 1)) {
-                //                 score += 1;
-                //                 if (score == (user_proper.length - 1) && score >= 1) rank_class = 1;
-                //                 if (score == user_proper.length) rank_class = 0;
-                //             }
-                //         }
-                //     }
-                //     rank_score.push(rank_class);
-                // }
             }
-            // var max_score = Math.max.apply(null, rank_score);
-            // var append_count = 0;
-            // for (j = 0; j <= max_score; j++) {
-            //     for (i = 0; i < rank.length; i++) {
-            //         var fn = class_filename_dict[rank[i]];
-            //         if (rank_score[i] == j) {
-            //             appendHTML(append_count, fn);
-            //             append_count += 1;
-            //         }
-            //     }
-            // }
             document.getElementById('property').scrollIntoView();
         }
+
+        var tar_proper_array = new Array();
+        function pick_drug() {
+            var user_proper = document.getElementById("user_proper").value.toLowerCase();
+            for (i = 0; i < tar_proper_array.length; i++) {
+                if (user_proper == "") {
+                    if (tar_proper_array[i] == "") {
+                        document.getElementById("top" + i).style = "";
+                    } else {
+                        document.getElementById("top" + i).style = "visibility:hidden; height:0px;";
+                    }
+                } else {
+                    var score = 0;
+                    for (j = 0; j < user_proper.length; j++) {
+                        for (k = 0; k < tar_proper_array[i].length; k++) {
+                            if (user_proper.substr(j, 1) == tar_proper_array[i].substr(k, 1)) {
+                                score += 1;
+                                break;
+                            }
+                        }
+                    }
+                    if (score == user_proper.length) {
+                        document.getElementById("top" + i).style = "";
+                    } else {
+                        document.getElementById("top" + i).style = "visibility:hidden; height:0px;";
+                    }
+                }
+                tar_proper_array[i]
+            }
+        }
+
         function shuffle(a) {
             var j, x, i;
             for (i = a.length - 1; i > 0; i--) {
